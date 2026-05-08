@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>系统架构图</title>
+<style>
+:root {
+  --cd-color-primary: #1a73e8;
+  --cd-color-bg: #ffffff;
+  --cd-font-heading: 'Inter', sans-serif;
+  --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+  --cd-spacing-unit: 8px;
+  --cd-radius: 4px;
+  --arch-surface: #ffffff;
+  --arch-border: #d7dfec;
+  --arch-text: #122033;
+  --arch-muted: #5d6b82;
+  --arch-edge: #5b6478;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 32px;
+  background: var(--cd-color-bg, #f5f7fb);
+  color: var(--arch-text);
+  font-family: var(--cd-font-body, 'Noto Sans SC', sans-serif);
+}
+.diagram-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px;
+  border: 1px solid var(--arch-border);
+  border-radius: 24px;
+  background: var(--arch-surface);
+  box-shadow: 0 16px 48px rgba(18, 32, 51, 0.08);
+}
+.diagram-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.diagram-title {
+  margin: 0;
+  font-family: var(--cd-font-heading, 'Noto Sans SC', sans-serif);
+  color: var(--cd-color-primary, #1a73e8);
+  font-size: 30px;
+}
+.diagram-subtitle {
+  margin: 0;
+  color: var(--arch-muted);
+  font-size: 15px;
+  line-height: 1.6;
+}
+.diagram-stage {
+  overflow-x: auto;
+}
+.diagram-stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.diagram-caption {
+  margin: 18px 0 0;
+  color: var(--arch-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+</style>
+
+<style media="print">
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  section {
+    page-break-after: always;
+    break-after: page;
+  }
+  section:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Hide interactive/non-print elements */
+  nav, .no-print, button, [role="navigation"] {
+    display: none !important;
+  }
+  /* Prevent orphan headings */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Keep images with their captions */
+  figure, img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+<div class="diagram-container">
+  <header class="diagram-header">
+    <h1 class="diagram-title">系统架构图</h1>
+    <p class="diagram-subtitle">API Gateway、用户服务、订单服务、支付服务、消息队列的核心组件与调用关系。</p>
+  </header>
+  <section class="diagram-stage" aria-label="architecture-diagram">
+    <svg width="800" height="360" viewBox="0 0 800 360" role="img" aria-label="系统架构图">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--arch-edge, #5b6478)" />
+      </marker>
+    </defs>
+    <style>
+      .edge { stroke: var(--arch-edge, #5b6478); stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .node-label { fill: #122033; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+    <path d="M 236 90 C 266 90, 266 90, 296 90" class="edge" /><path d="M 476 90 C 506 90, 506 90, 536 90" class="edge" /><path d="M 716 90 C 626 90, 626 260, 536 260" class="edge" /><path d="M 716 260 C 746 260, 746 260, 776 260" class="edge" />
+    <g data-node-id="node-1">
+    <rect x="56" y="56" width="180" height="68" rx="18" fill="#dbeafe" stroke="#364152" stroke-width="1.5" />
+    <text x="146" y="90" class="node-label">API Gateway</text>
+  </g><g data-node-id="node-2">
+    <rect x="296" y="56" width="180" height="68" rx="18" fill="#dcfce7" stroke="#364152" stroke-width="1.5" />
+    <text x="386" y="90" class="node-label">用户服务</text>
+  </g><g data-node-id="node-3">
+    <rect x="536" y="56" width="180" height="68" rx="18" fill="#fef3c7" stroke="#364152" stroke-width="1.5" />
+    <text x="626" y="90" class="node-label">订单服务</text>
+  </g><g data-node-id="node-4">
+    <rect x="536" y="226" width="180" height="68" rx="18" fill="#fce7f3" stroke="#364152" stroke-width="1.5" />
+    <text x="626" y="260" class="node-label">支付服务</text>
+  </g><g data-node-id="node-5">
+    <rect x="776" y="226" width="180" height="68" rx="18" fill="#ede9fe" stroke="#364152" stroke-width="1.5" />
+    <text x="866" y="260" class="node-label">消息队列</text>
+  </g>
+  </svg>
+  </section>
+  <p class="diagram-caption">包含 API Gateway、用户服务、订单服务、支付服务、消息队列 等组件。</p>
+</div>
+</body>
+</html>

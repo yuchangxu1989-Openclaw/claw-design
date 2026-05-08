@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claw Design — Flowchart 流程图</title>
+<style>
+:root {
+  --cd-color-primary: #1a73e8;
+  --cd-color-bg: #ffffff;
+  --cd-font-heading: 'Inter', sans-serif;
+  --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+  --cd-spacing-unit: 8px;
+  --cd-radius: 4px;
+}
+body {
+  font-family: var(--cd-font-body, 'Noto Sans SC', sans-serif);
+  background: var(--cd-color-bg, #fff);
+  margin: 2rem;
+  display: flex;
+  justify-content: center;
+}
+.diagram-wrapper {
+  max-width: 900px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: var(--cd-radius, 4px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+h1 {
+  font-family: var(--cd-font-heading);
+  color: var(--cd-color-primary);
+  margin-bottom: 1.5rem;
+}
+.mermaid { text-align: center; }
+.description {
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+</style>
+</head>
+<body>
+<div class="diagram-wrapper">
+  <h1>Flowchart 流程图</h1>
+  <div class="mermaid">
+flowchart TD
+    A[开始] --> B{判断}
+    B -->|是| C[处理]
+    B -->|否| D[跳过]
+    C --> E[结束]
+    D --> E
+  </div>
+  <p class="description">画一个用户注册流程图：输入邮箱→发送验证码→验证→设置密码→创建账户→完成</p>
+</div>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    themeVariables: {
+      primaryColor: getComputedStyle(document.documentElement).getPropertyValue('--cd-color-primary').trim() || '#1a73e8', // Google Blue — neutral default for slides/charts
+    },
+  });
+</script>
+</body>
+</html>

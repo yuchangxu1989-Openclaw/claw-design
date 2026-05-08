@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>移动端登录页面 原型</title>
+  <style>
+    :root {
+  --cd-color-primary: #1a73e8;
+  --cd-color-bg: #ffffff;
+  --cd-font-heading: 'Inter', sans-serif;
+  --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+  --cd-spacing-unit: 8px;
+  --cd-radius: 4px;
+      --proto-bg: #f8fafc;
+      --proto-surface: rgba(255, 255, 255, 0.92);
+      --proto-surface-muted: #f4f7fb;
+      --proto-text: #0f172a;
+      --proto-text-soft: #64748b;
+      --proto-border: rgba(15, 23, 42, 0.08);
+      --proto-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      --proto-radius-xl: 22px;
+      --proto-radius-md: 14px;
+      --proto-page-max: 1280px;
+      --proto-gap: clamp(12px, 2vw, 20px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: var(--cd-font-body, 'Noto Sans SC', 'Noto Sans', sans-serif);
+      background: linear-gradient(180deg, #eef4ff 0%, #f9fbff 100%);
+      color: var(--proto-text);
+      min-height: 100vh;
+    }
+    button, input, textarea, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+    .proto-shell {
+      max-width: var(--proto-page-max);
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    .proto-shell--wireframe { filter: grayscale(0.18); }
+    .proto-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(280px, 380px);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .proto-panel {
+      background: var(--proto-surface);
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-xl);
+      box-shadow: var(--proto-shadow);
+    }
+    .proto-hero__main,
+    .proto-hero__aside,
+    .proto-stage { background: var(--proto-surface); }
+    .proto-hero__main,
+    .proto-hero__aside { padding: 24px; }
+    .proto-hero__main { display: flex; flex-direction: column; gap: 18px; }
+    .proto-hero__aside { display: flex; flex-direction: column; gap: 14px; justify-content: space-between; }
+    .proto-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--cd-color-primary, #1a73e8);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .proto-title {
+      margin: 0;
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.08;
+    }
+    .proto-summary,
+    .proto-note,
+    .proto-page__summary,
+    .proto-card__body,
+    .proto-form__hint,
+    .proto-modal__body,
+    .proto-tab__body,
+    .proto-section__body,
+    .proto-toast { color: var(--proto-text-soft); line-height: 1.7; }
+    .proto-chip-row { display: flex; flex-wrap: wrap; gap: 10px; }
+    .proto-chip {
+      padding: 8px 12px;
+      background: rgba(26, 115, 232, 0.12);
+      color: var(--cd-color-primary, #1a73e8);
+      border-radius: 999px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .proto-stage {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: 720px;
+      overflow: hidden;
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-xl);
+      box-shadow: var(--proto-shadow);
+    }
+    .proto-sidebar {
+      padding: 24px 18px;
+      border-right: 1px solid var(--proto-border);
+      background: linear-gradient(180deg, rgba(26,115,232,0.08), rgba(26,115,232,0.02));
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .proto-brand {
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .proto-nav { display: flex; flex-direction: column; gap: 8px; }
+    .proto-nav__link {
+      padding: 12px 14px;
+      border-radius: var(--proto-radius-md);
+      color: var(--proto-text);
+      font-weight: 600;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .proto-nav__link:hover,
+    .proto-nav__link[data-active="true"] {
+      background: var(--cd-color-primary, #1a73e8);
+      color: #ffffff;
+      transform: translateX(2px);
+      border-color: transparent;
+    }
+    .proto-sidebar__meta {
+      margin-top: auto;
+      padding: 14px;
+      background: rgba(255,255,255,0.72);
+      border-radius: var(--proto-radius-md);
+      border: 1px solid var(--proto-border);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .proto-canvas { position: relative; padding: 22px; background: radial-gradient(circle at top right, rgba(26,115,232,0.08), transparent 35%); }
+    .proto-page { display: flex; flex-direction: column; gap: 18px; }
+    .proto-page[hidden] { display: none; }
+    .proto-page__header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 22px;
+      border-radius: var(--proto-radius-xl);
+      background: var(--proto-surface);
+      border: 1px solid var(--proto-border);
+    }
+    .proto-page__eyebrow {
+      margin: 0 0 8px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cd-color-primary, #1a73e8);
+      font-weight: 700;
+    }
+    .proto-page__title { margin: 0 0 10px; font-size: 1.8rem; }
+    .proto-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--proto-gap); }
+    .proto-section,
+    .proto-card,
+    .proto-tabs,
+    .proto-form {
+      background: var(--proto-surface);
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-xl);
+      padding: 18px;
+    }
+    .proto-section { grid-column: span 12; display: flex; flex-direction: column; gap: 12px; }
+    .proto-section__title { margin: 0; font-size: 1.15rem; }
+    .proto-card {
+      grid-column: span 4;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .proto-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15,23,42,0.14);
+    }
+    .proto-card__title { margin: 0; font-size: 1.05rem; }
+    .proto-card__action,
+    .proto-button,
+    .proto-button--ghost {
+      border-radius: var(--proto-radius-md);
+      padding: 12px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+    .proto-card__action:hover,
+    .proto-button:hover,
+    .proto-button--ghost:hover { transform: translateY(-1px); opacity: 0.92; }
+    .proto-card__action:active,
+    .proto-button:active,
+    .proto-button--ghost:active { transform: translateY(0) scale(0.98); opacity: 1; }
+    .proto-button:focus-visible,
+    .proto-button--ghost:focus-visible,
+    .proto-card__action:focus-visible {
+      outline: 2px solid var(--cd-color-primary, #1a73e8);
+      outline-offset: 2px;
+    }
+    .proto-button,
+    .proto-card__action {
+      border: 1px solid transparent;
+      background: var(--cd-color-primary, #1a73e8);
+      color: #ffffff;
+    }
+    .proto-button--ghost {
+      border: 1px solid var(--proto-border);
+      background: rgba(15,23,42,0.04);
+      color: var(--proto-text);
+    }
+    .proto-card[data-state="collapsed"] .proto-card__body {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .proto-tabs { grid-column: span 8; display: flex; flex-direction: column; gap: 14px; }
+    .proto-tabs__nav { display: flex; gap: 10px; flex-wrap: wrap; }
+    .proto-tabs__panel { display: none; }
+    .proto-tabs__panel[data-active="true"] { display: block; }
+    .proto-form {
+      grid-column: span 4;
+      background: var(--proto-surface-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .proto-form label { display: flex; flex-direction: column; gap: 8px; font-weight: 600; }
+    .proto-input {
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-md);
+      padding: 12px 14px;
+      background: #ffffff;
+      color: var(--proto-text);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    }
+    .proto-input:focus {
+      outline: none;
+      border-color: var(--cd-color-primary, #1a73e8);
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.18);
+    }
+    .proto-input:hover:not(:focus) {
+      border-color: rgba(15,23,42,0.2);
+    }
+    .proto-form__actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .proto-actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .proto-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.48);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      z-index: 20;
+    }
+    .proto-modal[hidden] { display: none; }
+    .proto-modal__panel {
+      width: min(520px, 100%);
+      background: var(--proto-surface);
+      border-radius: var(--proto-radius-xl);
+      padding: 24px;
+      box-shadow: var(--proto-shadow);
+      border: 1px solid var(--proto-border);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .proto-modal__title { margin: 0; font-size: 1.5rem; }
+    .proto-toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      max-width: 320px;
+      padding: 14px 16px;
+      border-radius: var(--proto-radius-md);
+      background: rgba(17, 24, 39, 0.92);
+      color: #f8fafc;
+      box-shadow: var(--proto-shadow);
+      z-index: 22;
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .proto-toast[data-visible="true"] { opacity: 1; transform: translateY(0); }
+    .proto-source {
+      font-size: 0.85rem;
+      padding: 12px 14px;
+      background: rgba(255,255,255,0.72);
+      border-radius: var(--proto-radius-md);
+      line-height: 1.7;
+      word-break: break-word;
+      border: 1px solid var(--proto-border);
+    }
+    /* ── Stats Panel ── */
+    .proto-stats { grid-column: span 12; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--proto-gap); }
+    .proto-stat-card {
+      background: var(--proto-surface);
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-xl);
+      padding: 18px;
+      text-align: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .proto-stat-card:hover { transform: translateY(-2px); box-shadow: var(--proto-shadow); }
+    .proto-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--cd-color-primary, #1a73e8); }
+    .proto-stat-label { font-size: 0.82rem; color: var(--proto-text-soft); margin-top: 4px; }
+    .proto-stat-change { font-size: 0.78rem; font-weight: 600; margin-top: 6px; }
+    .proto-stat-change--positive { color: #10b981; }
+    .proto-stat-change--negative { color: #ef4444; }
+    .proto-stat-change--neutral { color: var(--proto-text-soft); }
+    /* ── Table ── */
+    .proto-table-wrap { grid-column: span 12; overflow-x: auto; }
+    .proto-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--proto-surface);
+      border: 1px solid var(--proto-border);
+      border-radius: var(--proto-radius-xl);
+      overflow: hidden;
+    }
+    .proto-table th, .proto-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--proto-border); }
+    .proto-table th { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--proto-text-soft); background: var(--proto-surface-muted); }
+    .proto-table tr { transition: background 0.15s ease; }
+    .proto-table tbody tr:hover { background: rgba(15,23,42,0.03); }
+    /* ── Timeline ── */
+    .proto-timeline { grid-column: span 12; display: flex; flex-direction: column; gap: 0; padding: 0 0 0 20px; border-left: 2px solid var(--proto-border); }
+    .proto-timeline-item { position: relative; padding: 0 0 24px 20px; }
+    .proto-timeline-item::before {
+      content: ''; position: absolute; left: -27px; top: 4px;
+      width: 12px; height: 12px; border-radius: 50%;
+      border: 2px solid var(--proto-border); background: var(--proto-surface);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .proto-timeline-item--done::before { background: var(--cd-color-primary, #1a73e8); border-color: var(--cd-color-primary, #1a73e8); }
+    .proto-timeline-item--active::before { background: #10b981; border-color: #10b981; box-shadow: 0 0 0 4px rgba(16,185,129,0.2); }
+    .proto-timeline-time { font-size: 0.78rem; color: var(--proto-text-soft); font-weight: 600; }
+    .proto-timeline-title { font-weight: 600; margin-top: 2px; }
+    .proto-timeline-desc { font-size: 0.88rem; color: var(--proto-text-soft); margin-top: 2px; }
+    /* ── Progress Bar ── */
+    .proto-progress-wrap { grid-column: span 6; background: var(--proto-surface); border: 1px solid var(--proto-border); border-radius: var(--proto-radius-xl); padding: 18px; }
+    .proto-progress-label { font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
+    .proto-progress-track { height: 10px; background: var(--proto-surface-muted); border-radius: 5px; overflow: hidden; }
+    .proto-progress-fill { height: 100%; background: var(--cd-color-primary, #1a73e8); border-radius: 5px; transition: width 0.4s ease; }
+    /* ── Empty State ── */
+    .proto-empty { grid-column: span 6; background: var(--proto-surface); border: 1px dashed var(--proto-border); border-radius: var(--proto-radius-xl); padding: 32px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .proto-empty-icon { font-size: 2.5rem; }
+    .proto-empty-title { font-weight: 700; font-size: 1.1rem; }
+    .proto-empty-desc { color: var(--proto-text-soft); font-size: 0.9rem; }
+    /* ── Confirm Dialog ── */
+    .proto-confirm {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.48);
+      display: grid; place-items: center; padding: 20px; z-index: 21;
+    }
+    .proto-confirm[hidden] { display: none; }
+    .proto-confirm__panel {
+      width: min(400px, 100%); background: var(--proto-surface);
+      border-radius: var(--proto-radius-xl); padding: 24px;
+      box-shadow: var(--proto-shadow); border: 1px solid var(--proto-border);
+      text-align: center; display: flex; flex-direction: column; gap: 14px;
+    }
+    .proto-confirm__title { margin: 0; font-size: 1.2rem; }
+    .proto-confirm__body { color: var(--proto-text-soft); }
+    .proto-confirm__actions { display: flex; gap: 10px; justify-content: center; }
+    /* ── Select / Textarea / File Upload ── */
+    .proto-select {
+      border: 1px solid var(--proto-border); border-radius: var(--proto-radius-md);
+      padding: 12px 14px; background: #ffffff; color: var(--proto-text);
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%2364748b' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 12px center;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .proto-select:focus { outline: none; border-color: var(--cd-color-primary, #1a73e8); box-shadow: 0 0 0 3px rgba(26,115,232,0.18); }
+    .proto-textarea {
+      border: 1px solid var(--proto-border); border-radius: var(--proto-radius-md);
+      padding: 12px 14px; background: #ffffff; color: var(--proto-text);
+      resize: vertical; min-height: 80px; font: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .proto-textarea:focus { outline: none; border-color: var(--cd-color-primary, #1a73e8); box-shadow: 0 0 0 3px rgba(26,115,232,0.18); }
+    .proto-file-upload {
+      border: 2px dashed var(--proto-border); border-radius: var(--proto-radius-xl);
+      padding: 24px; text-align: center; cursor: pointer;
+      background: var(--proto-surface-muted); color: var(--proto-text-soft);
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+    .proto-file-upload:hover { border-color: var(--cd-color-primary, #1a73e8); background: rgba(26,115,232,0.04); }
+    .proto-file-upload-icon { font-size: 1.5rem; margin-bottom: 6px; }
+    /* ── Bottom Tab Bar (mobile nav variant) ── */
+    .proto-bottom-tab {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--proto-surface); border-top: 1px solid var(--proto-border);
+      display: none; justify-content: space-around; padding: 8px 0 env(safe-area-inset-bottom, 8px);
+      z-index: 15; box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+    }
+    .proto-bottom-tab__item {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      font-size: 0.72rem; font-weight: 600; color: var(--proto-text-soft);
+      padding: 6px 12px; border-radius: var(--proto-radius-md);
+      transition: color 0.2s ease, background 0.2s ease; cursor: pointer; border: none; background: none;
+    }
+    .proto-bottom-tab__item:hover, .proto-bottom-tab__item[data-active="true"] { color: var(--cd-color-primary, #1a73e8); }
+    .proto-bottom-tab__icon { font-size: 1.2rem; }
+    @media (max-width: 767px) {
+      .proto-bottom-tab { display: flex; }
+      body { padding-bottom: 72px; }
+    }
+    @media (max-width: 1024px) {
+      .proto-hero,
+      .proto-stage { grid-template-columns: 1fr; }
+      .proto-sidebar { border-right: none; border-bottom: 1px solid var(--proto-border); }
+      .proto-card,
+      .proto-tabs,
+      .proto-form { grid-column: span 12; }
+    }
+    @media (max-width: 767px) {
+      .proto-shell { padding: 16px 12px 28px; }
+      .proto-hero__main,
+      .proto-hero__aside,
+      .proto-page__header,
+      .proto-tabs,
+      .proto-card,
+      .proto-form,
+      .proto-section { padding: 16px; }
+      .proto-title { font-size: 2rem; }
+      .proto-page__title { font-size: 1.45rem; }
+      .proto-page__header { flex-direction: column; }
+      .proto-nav { flex-direction: row; overflow: auto; padding-bottom: 4px; }
+      .proto-nav__link { white-space: nowrap; }
+      .proto-canvas { padding: 14px; }
+    }
+  </style>
+
+<style media="print">
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  section {
+    page-break-after: always;
+    break-after: page;
+  }
+  section:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Hide interactive/non-print elements */
+  nav, .no-print, button, [role="navigation"] {
+    display: none !important;
+  }
+  /* Prevent orphan headings */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Keep images with their captions */
+  figure, img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+  <div class="proto-shell proto-shell--minimal">
+    <section class="proto-hero">
+      <div class="proto-panel proto-hero__main">
+        <span class="proto-kicker">移动端登录页面 原型</span>
+        <h1 class="proto-title">移动端登录页面 原型</h1>
+        <p class="proto-summary">移动端登录页面，包含手机号输入、验证码、微信登录按钮</p>
+        <div class="proto-chip-row">
+          <span class="proto-chip">总览首页</span><span class="proto-chip">详情视图</span><span class="proto-chip">数据总览</span>
+        </div>
+      </div>
+      <aside class="proto-panel proto-hero__aside">
+        <div>
+          <h2 style="margin:0 0 10px; font-size: 1.15rem;">功能概览</h2>
+          <p class="proto-note">移动端登录页面，包含手机号输入、验证码、微信登录按钮</p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="proto-stage">
+      <aside class="proto-sidebar">
+        <div class="proto-brand">移动端登录页面 原型</div>
+        <nav class="proto-nav" data-component="nav-panel" data-state="active">
+          <a class="proto-nav__link" href="#/home" data-route-link="home" data-action="navigate">总览首页</a>
+          <a class="proto-nav__link" href="#/detail" data-route-link="detail" data-action="navigate">详情视图</a>
+          <a class="proto-nav__link" href="#/dashboard" data-route-link="dashboard" data-action="navigate">数据总览</a>
+        </nav>
+        <div class="proto-sidebar__meta">
+          <strong>© 移动端登录页面 原型 2026</strong>
+        </div>
+      </aside>
+
+      <main class="proto-canvas">
+        <section id="page-home" data-page="home" class="proto-page">
+          <header class="proto-page__header">
+            <div>
+              <p class="proto-page__eyebrow">home</p>
+              <h2 class="proto-page__title">总览首页</h2>
+              <p class="proto-page__summary">总览首页聚焦移动端登录页面，支持跳转、状态切换和即时反馈。</p>
+            </div>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="button" data-action="modal" data-state-target="global-modal" data-modal-id="global-modal">查看详情</button>
+              <button class="proto-button--ghost" type="button" data-action="tab-switch" data-state-target="tabs-home-interaction" data-state-value="detail">切换视图</button>
+            </div>
+          </header>
+          <div class="proto-grid">
+<section id="home-overview" class="proto-section" data-section="overview">
+            <h3 class="proto-section__title">总览首页 · 信息概览</h3>
+            <p class="proto-section__body">把移动端登录页面拆成导航、推荐内容和行动入口，便于首屏验证。</p>
+            
+          </section>
+          
+          <article class="proto-card" data-component="card-home-overview-0" data-state="collapsed">
+            <h4 class="proto-card__title">核心入口</h4>
+            <p class="proto-card__body">把移动端登录页面拆成主导航、内容区和行动按钮，首屏直接说明价值。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-home-overview-0">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-home-overview-1" data-state="collapsed">
+            <h4 class="proto-card__title">推荐内容</h4>
+            <p class="proto-card__body">通过卡片承接高频操作，点击后跳到详情或下一步。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-home-overview-1">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-home-overview-2" data-state="collapsed">
+            <h4 class="proto-card__title">状态提示</h4>
+            <p class="proto-card__body">页面内提供显式反馈，让用户知道当前停留位置和后续动作。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-home-overview-2">展开内容</button>
+          </article>
+          
+          
+          
+          
+          
+          
+<section id="home-interaction" class="proto-section" data-section="interaction">
+            <h3 class="proto-section__title">总览首页 · 交互验证</h3>
+            <p class="proto-section__body">通过模态框、标签切换和表单提交，把点击路径跑通。</p>
+            <div class="proto-actions-row"><button class="proto-button--ghost" type="button" data-action="scroll-to" data-target-section-id="home-interaction">定位到交互区</button></div>
+          </section>
+          
+          
+          <section class="proto-tabs" data-component="tabs-home-interaction" data-state="overview">
+
+            <div class="proto-tabs__nav">
+              <button
+                class="proto-button"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-home-interaction"
+                data-state-value="overview"
+              >概要</button>
+              <button
+                class="proto-button--ghost"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-home-interaction"
+                data-state-value="detail"
+              >详情</button>
+            </div>
+            <div class="proto-tabs__panel" data-panel="overview" data-active="true"><p class="proto-tab__body">总览首页当前展示概要信息，适合首轮演示和快速过稿。</p></div><div class="proto-tabs__panel" data-panel="detail" data-active="false"><p class="proto-tab__body">切换到详情视图后，可以展开更多流程说明和边界条件。</p></div>
+          </section>
+          
+          
+          
+          
+          <form class="proto-form" data-demo-form>
+            
+              <label>
+                <span>搜索关键词</span>
+                <input class="proto-input" type="search" placeholder="输入你想看的内容">
+              </label>
+            <label>
+              <span>跳转到其他页面</span>
+              <select class="proto-select" onchange="if(this.value) window.location.hash = this.value;">
+                <option value="">请选择</option>
+                <option value="#/detail">详情视图</option><option value="#/dashboard">数据总览</option>
+              </select>
+            </label>
+            <p class="proto-form__hint">提交后会显示反馈 toast，页面状态不会被清空。</p>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="submit" data-action="toggle">提交</button>
+              <button class="proto-button--ghost" type="button" data-action="modal" data-state-target="global-modal">了解更多</button>
+            </div>
+          </form>
+          </div>
+        </section>
+
+<section id="page-detail" data-page="detail" class="proto-page" hidden>
+          <header class="proto-page__header">
+            <div>
+              <p class="proto-page__eyebrow">detail</p>
+              <h2 class="proto-page__title">详情视图</h2>
+              <p class="proto-page__summary">详情视图聚焦移动端登录页面，支持跳转、状态切换和即时反馈。</p>
+            </div>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="button" data-action="modal" data-state-target="global-modal" data-modal-id="global-modal">查看详情</button>
+              <button class="proto-button--ghost" type="button" data-action="tab-switch" data-state-target="tabs-detail-interaction" data-state-value="detail">切换视图</button>
+            </div>
+          </header>
+          <div class="proto-grid">
+<section id="detail-overview" class="proto-section" data-section="overview">
+            <h3 class="proto-section__title">详情视图 · 信息概览</h3>
+            <p class="proto-section__body">围绕移动端登录页面补足上下文、状态切换和下一步动作。</p>
+            
+          </section>
+          
+          <article class="proto-card" data-component="card-detail-overview-0" data-state="collapsed">
+            <h4 class="proto-card__title">内容摘要</h4>
+            <p class="proto-card__body">把移动端登录页面的重点做成信息块，展开后展示更多上下文。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-detail-overview-0">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-detail-overview-1" data-state="collapsed">
+            <h4 class="proto-card__title">对比区域</h4>
+            <p class="proto-card__body">通过视图切换展示不同信息层，保持页面密度可控。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-detail-overview-1">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-detail-overview-2" data-state="collapsed">
+            <h4 class="proto-card__title">操作面板</h4>
+            <p class="proto-card__body">在固定区域放下一步动作，演示流程更顺。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-detail-overview-2">展开内容</button>
+          </article>
+          
+          
+          
+          
+          
+          
+<section id="detail-interaction" class="proto-section" data-section="interaction">
+            <h3 class="proto-section__title">详情视图 · 交互验证</h3>
+            <p class="proto-section__body">通过模态框、标签切换和表单提交，把点击路径跑通。</p>
+            <div class="proto-actions-row"><button class="proto-button--ghost" type="button" data-action="scroll-to" data-target-section-id="detail-interaction">定位到交互区</button></div>
+          </section>
+          
+          
+          <section class="proto-tabs" data-component="tabs-detail-interaction" data-state="overview">
+
+            <div class="proto-tabs__nav">
+              <button
+                class="proto-button"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-detail-interaction"
+                data-state-value="overview"
+              >概要</button>
+              <button
+                class="proto-button--ghost"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-detail-interaction"
+                data-state-value="detail"
+              >详情</button>
+            </div>
+            <div class="proto-tabs__panel" data-panel="overview" data-active="true"><p class="proto-tab__body">详情视图当前展示概要信息，适合首轮演示和快速过稿。</p></div><div class="proto-tabs__panel" data-panel="detail" data-active="false"><p class="proto-tab__body">切换到详情视图后，可以展开更多流程说明和边界条件。</p></div>
+          </section>
+          
+          
+          
+          
+          <form class="proto-form" data-demo-form>
+            
+              <label>
+                <span>搜索关键词</span>
+                <input class="proto-input" type="search" placeholder="输入你想看的内容">
+              </label>
+            <label>
+              <span>跳转到其他页面</span>
+              <select class="proto-select" onchange="if(this.value) window.location.hash = this.value;">
+                <option value="">请选择</option>
+                <option value="#/home">总览首页</option><option value="#/dashboard">数据总览</option>
+              </select>
+            </label>
+            <p class="proto-form__hint">提交后会显示反馈 toast，页面状态不会被清空。</p>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="submit" data-action="toggle">提交</button>
+              <button class="proto-button--ghost" type="button" data-action="modal" data-state-target="global-modal">了解更多</button>
+            </div>
+          </form>
+<section id="detail-data" class="proto-section" data-section="data-display">
+            <h3 class="proto-section__title">详情视图 · 数据展示</h3>
+            <p class="proto-section__body">通过统计面板、表格和时间线展示结构化数据。</p>
+            
+          </section>
+          <div class="proto-stats"><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">浏览量</div>
+      
+    </div><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">收藏数</div>
+      
+    </div></div>
+          
+          
+          <div class="proto-table-wrap" style="grid-column:span 12">
+    <table class="proto-table"><thead><tr><th>属性</th><th>值</th><th>说明</th></tr></thead><tbody><tr><td>类型</td><td>—</td><td>—</td></tr><tr><td>版本</td><td>—</td><td>—</td></tr></tbody></table>
+  </div>
+          <div class="proto-timeline"><div class="proto-timeline-item proto-timeline-item--done">
+      <div class="proto-timeline-time">阶段 1</div>
+      <div class="proto-timeline-title">梳理移动端登录页面</div>
+      <div class="proto-timeline-desc">先确认主要内容和页面目标</div>
+    </div><div class="proto-timeline-item proto-timeline-item--active">
+      <div class="proto-timeline-time">阶段 2</div>
+      <div class="proto-timeline-title">完善详情视图</div>
+      <div class="proto-timeline-desc">补齐当前页面的重点信息</div>
+    </div><div class="proto-timeline-item proto-timeline-item--pending">
+      <div class="proto-timeline-time">阶段 3</div>
+      <div class="proto-timeline-title">等待下一步确认</div>
+      <div class="proto-timeline-desc">根据反馈继续细化体验</div>
+    </div></div>
+          
+          
+          
+          </div>
+        </section>
+
+<section id="page-dashboard" data-page="dashboard" class="proto-page" hidden>
+          <header class="proto-page__header">
+            <div>
+              <p class="proto-page__eyebrow">dashboard</p>
+              <h2 class="proto-page__title">数据总览</h2>
+              <p class="proto-page__summary">数据总览聚焦移动端登录页面，支持跳转、状态切换和即时反馈。</p>
+            </div>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="button" data-action="modal" data-state-target="global-modal" data-modal-id="global-modal">查看详情</button>
+              <button class="proto-button--ghost" type="button" data-action="tab-switch" data-state-target="tabs-dashboard-interaction" data-state-value="detail">切换视图</button>
+            </div>
+          </header>
+          <div class="proto-grid">
+<section id="dashboard-overview" class="proto-section" data-section="overview">
+            <h3 class="proto-section__title">数据总览 · 信息概览</h3>
+            <p class="proto-section__body">通过指标、趋势和异常提示验证信息密度。</p>
+            
+          </section>
+          
+          <article class="proto-card" data-component="card-dashboard-overview-0" data-state="collapsed">
+            <h4 class="proto-card__title">指标概览</h4>
+            <p class="proto-card__body">用摘要卡快速表达关键结论。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-dashboard-overview-0">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-dashboard-overview-1" data-state="collapsed">
+            <h4 class="proto-card__title">趋势洞察</h4>
+            <p class="proto-card__body">提供可切换视图，便于看不同时间范围。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-dashboard-overview-1">展开内容</button>
+          </article>
+<article class="proto-card" data-component="card-dashboard-overview-2" data-state="collapsed">
+            <h4 class="proto-card__title">异常处理</h4>
+            <p class="proto-card__body">异常提示通过欢迎弹窗呈现，减少页面噪音。</p>
+            <button class="proto-card__action" type="button" data-action="toggle" data-state-target="card-dashboard-overview-2">展开内容</button>
+          </article>
+          
+          
+          
+          
+          
+          
+<section id="dashboard-interaction" class="proto-section" data-section="interaction">
+            <h3 class="proto-section__title">数据总览 · 交互验证</h3>
+            <p class="proto-section__body">通过模态框、标签切换和表单提交，把点击路径跑通。</p>
+            <div class="proto-actions-row"><button class="proto-button--ghost" type="button" data-action="scroll-to" data-target-section-id="dashboard-interaction">定位到交互区</button></div>
+          </section>
+          
+          
+          <section class="proto-tabs" data-component="tabs-dashboard-interaction" data-state="overview">
+
+            <div class="proto-tabs__nav">
+              <button
+                class="proto-button"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-dashboard-interaction"
+                data-state-value="overview"
+              >概要</button>
+              <button
+                class="proto-button--ghost"
+                type="button"
+                data-action="tab-switch"
+                data-tab-trigger="true"
+                data-state-target="tabs-dashboard-interaction"
+                data-state-value="detail"
+              >详情</button>
+            </div>
+            <div class="proto-tabs__panel" data-panel="overview" data-active="true"><p class="proto-tab__body">数据总览当前展示概要信息，适合首轮演示和快速过稿。</p></div><div class="proto-tabs__panel" data-panel="detail" data-active="false"><p class="proto-tab__body">切换到详情视图后，可以展开更多流程说明和边界条件。</p></div>
+          </section>
+          
+          
+          
+          
+          <form class="proto-form" data-demo-form>
+            
+              <label>
+                <span>搜索关键词</span>
+                <input class="proto-input" type="search" placeholder="输入你想看的内容">
+              </label>
+            <label>
+              <span>跳转到其他页面</span>
+              <select class="proto-select" onchange="if(this.value) window.location.hash = this.value;">
+                <option value="">请选择</option>
+                <option value="#/home">总览首页</option><option value="#/detail">详情视图</option>
+              </select>
+            </label>
+            <p class="proto-form__hint">提交后会显示反馈 toast，页面状态不会被清空。</p>
+            <div class="proto-form__actions">
+              <button class="proto-button" type="submit" data-action="toggle">提交</button>
+              <button class="proto-button--ghost" type="button" data-action="modal" data-state-target="global-modal">了解更多</button>
+            </div>
+          </form>
+<section id="dashboard-data" class="proto-section" data-section="data-display">
+            <h3 class="proto-section__title">数据总览 · 数据展示</h3>
+            <p class="proto-section__body">通过统计面板、表格和时间线展示结构化数据。</p>
+            
+          </section>
+          <div class="proto-stats"><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">总用户</div>
+      
+    </div><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">活跃率</div>
+      
+    </div><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">转化率</div>
+      
+    </div><div class="proto-stat-card">
+      <div class="proto-stat-value">—</div>
+      <div class="proto-stat-label">平均时长</div>
+      
+    </div></div>
+          
+          
+          <div class="proto-table-wrap" style="grid-column:span 12">
+    <table class="proto-table"><thead><tr><th>名称</th><th>状态</th><th>数值</th><th>趋势</th></tr></thead><tbody><tr><td>指标 A</td><td>—</td><td>—</td><td>—</td></tr><tr><td>指标 B</td><td>—</td><td>—</td><td>—</td></tr><tr><td>指标 C</td><td>—</td><td>—</td><td>—</td></tr></tbody></table>
+  </div>
+          <div class="proto-timeline"><div class="proto-timeline-item proto-timeline-item--done">
+      <div class="proto-timeline-time">阶段 1</div>
+      <div class="proto-timeline-title">确认移动端登录页面</div>
+      <div class="proto-timeline-desc">先对齐核心目标与页面结构</div>
+    </div><div class="proto-timeline-item proto-timeline-item--active">
+      <div class="proto-timeline-time">阶段 2</div>
+      <div class="proto-timeline-title">整理关键数据视图</div>
+      <div class="proto-timeline-desc">把重要信息收束到同一屏内</div>
+    </div><div class="proto-timeline-item proto-timeline-item--pending">
+      <div class="proto-timeline-time">阶段 3</div>
+      <div class="proto-timeline-title">准备业务演示</div>
+      <div class="proto-timeline-desc">补齐说明文案和后续动作</div>
+    </div></div>
+          
+          
+          
+          </div>
+        </section>
+      </main>
+    </section>
+  </div>
+
+  <div class="proto-modal" data-component="global-modal" data-state="closed" hidden>
+    <div class="proto-modal__panel">
+      <h2 class="proto-modal__title">欢迎使用移动端登录页面 原型</h2>
+      <p class="proto-modal__body">移动端登录页面 原型 已准备好展示核心页面与关键操作，你可以从这里快速浏览重点内容。移动端登录页面，包含手机号输入、验证码、微信登录按钮</p>
+      <div class="proto-form__actions">
+        <button class="proto-button" type="button" data-action="modal-close" data-state-target="global-modal">关闭</button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proto-toast" data-component="global-toast" data-state="hidden"></div>
+
+  <div class="proto-confirm" data-component="global-confirm" data-state="closed" hidden>
+    <div class="proto-confirm__panel">
+      <h3 class="proto-confirm__title">确认操作</h3>
+      <p class="proto-confirm__body">确定要执行此操作吗？</p>
+      <div class="proto-confirm__actions">
+        <button class="proto-button--ghost" type="button" data-action="confirm-cancel" data-state-target="global-confirm">取消</button>
+        <button class="proto-button" type="button" data-action="confirm-ok" data-state-target="global-confirm">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="proto-bottom-tab" data-component="bottom-tab">
+    <button class="proto-bottom-tab__item" data-action="navigate" data-target-page="home" data-route-link="home"><span class="proto-bottom-tab__icon">🏠</span><span>总览首页</span></button>
+    <button class="proto-bottom-tab__item" data-action="navigate" data-target-page="detail" data-route-link="detail"><span class="proto-bottom-tab__icon">📝</span><span>详情视图</span></button>
+    <button class="proto-bottom-tab__item" data-action="navigate" data-target-page="dashboard" data-route-link="dashboard"><span class="proto-bottom-tab__icon">📊</span><span>数据总览</span></button>
+  </nav>
+
+  <script>
+    const routes = {
+      home: 'page-home',
+      detail: 'page-detail',
+      dashboard: 'page-dashboard',
+    };
+    const pages = routes;
+    const defaultPage = 'home';
+    const stateRegistry = {
+      'global-modal': { defaultState: 'closed' },
+      'global-toast': { defaultState: 'hidden' },
+      'global-confirm': { defaultState: 'closed' },
+      'card-home-overview-0': { defaultState: 'collapsed' },
+      'card-home-overview-1': { defaultState: 'collapsed' },
+      'card-home-overview-2': { defaultState: 'collapsed' },
+      'tabs-home-interaction': { defaultState: 'overview' },
+      'card-detail-overview-0': { defaultState: 'collapsed' },
+      'card-detail-overview-1': { defaultState: 'collapsed' },
+      'card-detail-overview-2': { defaultState: 'collapsed' },
+      'tabs-detail-interaction': { defaultState: 'overview' },
+      'card-dashboard-overview-0': { defaultState: 'collapsed' },
+      'card-dashboard-overview-1': { defaultState: 'collapsed' },
+      'card-dashboard-overview-2': { defaultState: 'collapsed' },
+      'tabs-dashboard-interaction': { defaultState: 'overview' },
+    };
+
+    function getPageFromHash() {
+      const value = window.location.hash.replace(/^#/?/, '');
+      return value || defaultPage;
+    }
+
+    function syncPage() {
+      const pageName = getPageFromHash();
+      const targetId = pages[pageName] || pages[defaultPage];
+      document.querySelectorAll('[data-page]').forEach((page) => {
+        page.hidden = page.id !== targetId;
+      });
+      document.querySelectorAll('[data-route-link]').forEach((link) => {
+        link.dataset.active = String(link.dataset.routeLink === pageName);
+      });
+    }
+
+    function syncComponent(component) {
+      if (!component) return;
+      const name = component.dataset.component;
+      const state = component.dataset.state || stateRegistry[name]?.defaultState || '';
+      if (name === 'global-modal') {
+        component.hidden = state !== 'open';
+      }
+      if (name === 'global-confirm') {
+        component.hidden = state !== 'open';
+      }
+      if (name === 'global-toast') {
+        component.dataset.visible = String(state === 'visible');
+      }
+      if (name && name.startsWith('card-')) {
+        const action = component.querySelector('[data-action="toggle"]');
+        if (action) {
+          action.textContent = state === 'collapsed' ? '展开内容' : '收起内容';
+        }
+      }
+      if (name && name.startsWith('tabs-')) {
+        component.querySelectorAll('[data-panel]').forEach((panel) => {
+          panel.dataset.active = String(panel.dataset.panel === state);
+        });
+        component.querySelectorAll('[data-tab-trigger]').forEach((trigger) => {
+          const active = trigger.dataset.stateValue === state;
+          trigger.className = active ? 'proto-button' : 'proto-button--ghost';
+        });
+      }
+    }
+
+    function syncAllStates() {
+      document.querySelectorAll('[data-component]').forEach((component) => syncComponent(component));
+    }
+
+    function showToast(message) {
+      const toast = document.querySelector('[data-component="global-toast"]');
+      if (!toast) return;
+      toast.textContent = message;
+      toast.dataset.state = 'visible';
+      syncComponent(toast);
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => {
+        toast.dataset.state = 'hidden';
+        syncComponent(toast);
+      }, 1800);
+    }
+
+    function scrollToSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    document.addEventListener('click', (event) => {
+      const trigger = event.target.closest('[data-action]');
+      if (!trigger) return;
+
+      const action = trigger.dataset.action;
+      const targetName = trigger.dataset.stateTarget;
+      const component = targetName ? document.querySelector('[data-component="' + targetName + '"]') : null;
+
+      if (action === 'navigate') {
+        const targetPage = trigger.dataset.targetPage || trigger.dataset.routeLink;
+        if (targetPage) {
+          window.location.hash = '#/' + targetPage;
+        }
+        return;
+      }
+
+      if (action === 'toggle' && component) {
+        component.dataset.state = component.dataset.state === 'collapsed' ? 'expanded' : 'collapsed';
+        syncComponent(component);
+        return;
+      }
+
+      if (action === 'modal' && component) {
+        component.dataset.state = 'open';
+        syncComponent(component);
+        return;
+      }
+
+      if (action === 'modal-close' && component) {
+        component.dataset.state = 'closed';
+        syncComponent(component);
+        return;
+      }
+
+      if (action === 'tab-switch' && component) {
+        component.dataset.state = trigger.dataset.stateValue || component.dataset.state || 'overview';
+        syncComponent(component);
+        return;
+      }
+
+      if (action === 'confirm-dialog') {
+        const confirm = document.querySelector('[data-component="global-confirm"]');
+        if (confirm) { confirm.dataset.state = 'open'; syncComponent(confirm); }
+        return;
+      }
+
+      if ((action === 'confirm-cancel' || action === 'confirm-ok') && component) {
+        component.dataset.state = 'closed';
+        syncComponent(component);
+        if (action === 'confirm-ok') showToast('操作已确认。');
+        return;
+      }
+
+      if (action === 'scroll-to') {
+        const targetSectionId = trigger.dataset.targetSectionId;
+        if (targetSectionId) {
+          scrollToSection(targetSectionId);
+          showToast('已定位到目标模块。');
+        }
+        return;
+      }
+    });
+
+    document.addEventListener('submit', (event) => {
+      const form = event.target.closest('[data-demo-form]');
+      if (!form) return;
+      event.preventDefault();
+      showToast('表单提交成功，当前页面状态已保留。');
+    });
+
+    window.addEventListener('hashchange', syncPage);
+    if (!window.location.hash) {
+      window.location.hash = '#/' + defaultPage;
+    }
+    syncAllStates();
+    syncPage();
+  </script>
+</body>
+</html>

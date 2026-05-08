@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 660 320" font-family="'Noto Sans SC','PingFang SC',sans-serif">
+  <!-- Axes -->
+    <line x1="60" y1="40" x2="60" y2="280" stroke="#e5e7eb" stroke-width="1"/>
+    <line x1="60" y1="280" x2="620" y2="280" stroke="#e5e7eb" stroke-width="1"/>
+    <line x1="60" y1="280" x2="620" y2="280" stroke="#f3f4f6" stroke-width="1"/>
+    <text x="52" y="284" text-anchor="end" font-size="11" fill="#9ca3af">0</text>
+    <line x1="60" y1="220" x2="620" y2="220" stroke="#f3f4f6" stroke-width="1"/>
+    <text x="52" y="224" text-anchor="end" font-size="11" fill="#9ca3af">53</text>
+    <line x1="60" y1="160" x2="620" y2="160" stroke="#f3f4f6" stroke-width="1"/>
+    <text x="52" y="164" text-anchor="end" font-size="11" fill="#9ca3af">105</text>
+    <line x1="60" y1="100" x2="620" y2="100" stroke="#f3f4f6" stroke-width="1"/>
+    <text x="52" y="104" text-anchor="end" font-size="11" fill="#9ca3af">158</text>
+    <line x1="60" y1="40" x2="620" y2="40" stroke="#f3f4f6" stroke-width="1"/>
+    <text x="52" y="44" text-anchor="end" font-size="11" fill="#9ca3af">210</text>
+    <rect x="105.0" y="142.9" width="50" height="137.1" rx="4" fill="#6C5CE7"/>
+    <text x="130.0" y="136.9" text-anchor="middle" font-size="11" font-weight="700" fill="#6C5CE7">120</text>
+    <text x="130.0" y="298" text-anchor="middle" font-size="11" fill="#6b7280">Q1</text>
+    <rect x="245.0" y="108.6" width="50" height="171.4" rx="4" fill="#E17055"/>
+    <text x="270.0" y="102.6" text-anchor="middle" font-size="11" font-weight="700" fill="#E17055">150</text>
+    <text x="270.0" y="298" text-anchor="middle" font-size="11" fill="#6b7280">Q2</text>
+    <rect x="385.0" y="74.3" width="50" height="205.7" rx="4" fill="#0984E3"/>
+    <text x="410.0" y="68.3" text-anchor="middle" font-size="11" font-weight="700" fill="#0984E3">180</text>
+    <text x="410.0" y="298" text-anchor="middle" font-size="11" fill="#6b7280">Q3</text>
+    <rect x="525.0" y="40.0" width="50" height="240.0" rx="4" fill="#00B894"/>
+    <text x="550.0" y="34.0" text-anchor="middle" font-size="11" font-weight="700" fill="#00B894">210</text>
+    <text x="550.0" y="298" text-anchor="middle" font-size="11" fill="#6b7280">Q4</text>
+  </svg>

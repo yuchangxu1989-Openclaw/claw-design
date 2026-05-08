@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Huggingface — Design System Reference</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Inter, system-ui, sans-serif; background: #fafafa; color: #222; padding: 40px 24px; max-width: 960px; margin: 0 auto; }
+    h1 { font-family: Inter, system-ui, sans-serif; font-size: 28px; margin-bottom: 8px; }
+    h2 { font-family: Inter, system-ui, sans-serif; font-size: 20px; margin: 32px 0 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+    .meta { color: #666; margin-bottom: 32px; }
+    .swatches { display: flex; flex-wrap: wrap; gap: 12px; }
+    .swatch { width: 100px; height: 80px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding: 6px; border: 1px solid #e0e0e0; }
+    .swatch span { font-size: 10px; color: #666; margin-bottom: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 90px; }
+    .swatch code { font-size: 10px; color: #999; }
+    .font-demo { margin: 12px 0; }
+    .font-demo p { margin: 8px 0; }
+    .spacing-item { display: flex; align-items: center; gap: 12px; margin: 6px 0; }
+    .spacing-item span { width: 40px; font-size: 12px; color: #666; }
+    .spacing-bar { border-radius: 3px; }
+    .spacing-item code { font-size: 11px; color: #999; }
+    .radius-item { display: inline-flex; align-items: center; gap: 8px; margin: 8px 16px 8px 0; }
+    .radius-box { width: 48px; height: 48px; background: #ffd21e; }
+    .radius-item span { font-size: 12px; color: #666; }
+    .component-demo { margin: 12px 0; padding: 20px; background: #ffffff; border-radius: 12px; border: 1px solid #eee; }
+    .btn-demo { display: inline-block; background: #ffd21e; color: #ffffff; border: none; border-radius: 6px; padding: 10px 20px; font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; margin-right: 12px; }
+    .card-demo { background: #fff; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 24px; margin: 12px 0; max-width: 320px; }
+    .card-demo h3 { font-family: Inter, system-ui, sans-serif; font-size: 18px; margin-bottom: 8px; }
+    .card-demo p { font-size: 14px; color: #555; }
+    .input-demo { border: 1px solid #ffd21e; border-radius: 4px; padding: 10px 14px; font-family: Inter, system-ui, sans-serif; font-size: 14px; width: 260px; outline: none; }
+  </style>
+</head>
+<body>
+  <h1>Huggingface</h1>
+  <p class="meta">Design System Reference — Package ID: huggingface</p>
+
+  <h2>Color Palette</h2>
+  <div class="swatches">
+      <div class="swatch" style="background:#ffd21e"><span>hf-yellow</span><code>#ffd21e</code></div>
+      <div class="swatch" style="background:#f59e0b"><span>hf-yellow-deep</span><code>#f59e0b</code></div>
+      <div class="swatch" style="background:#fff4cc"><span>hf-yellow-soft</span><code>#fff4cc</code></div>
+      <div class="swatch" style="background:#ffffff"><span>canvas</span><code>#ffffff</code></div>
+      <div class="swatch" style="background:#fafafa"><span>canvas-subtle</span><code>#fafafa</code></div>
+      <div class="swatch" style="background:#f3f4f6"><span>canvas-inset</span><code>#f3f4f6</code></div>
+      <div class="swatch" style="background:#0d1117"><span>canvas-dark</span><code>#0d1117</code></div>
+      <div class="swatch" style="background:#0d1117"><span>ink-primary</span><code>#0d1117</code></div>
+      <div class="swatch" style="background:#374151"><span>ink-secondary</span><code>#374151</code></div>
+      <div class="swatch" style="background:#6b7280"><span>ink-muted</span><code>#6b7280</code></div>
+      <div class="swatch" style="background:#f9fafb"><span>ink-inverse</span><code>#f9fafb</code></div>
+      <div class="swatch" style="background:#2563eb"><span>nlp-blue</span><code>#2563eb</code></div>
+  </div>
+
+  <h2>Typography</h2>
+
+      <div class="font-demo">
+        <p style="font-family:Inter, system-ui, sans-serif;font-size:32px;font-weight:700">Heading: Inter</p>
+        <p style="font-family:Inter, system-ui, sans-serif;font-size:16px;font-weight:400">Body: Inter — The quick brown fox jumps over the lazy dog.</p>
+      </div>
+
+  <h2>Spacing Scale</h2>
+  <div class="spacing-scale">
+      <div class="spacing-item"><span>xs</span><div class="spacing-bar" style="width:4px;height:12px;background:#ffd21e"></div><code>4px</code></div>
+      <div class="spacing-item"><span>sm</span><div class="spacing-bar" style="width:8px;height:12px;background:#ffd21e"></div><code>8px</code></div>
+      <div class="spacing-item"><span>md</span><div class="spacing-bar" style="width:16px;height:12px;background:#ffd21e"></div><code>16px</code></div>
+      <div class="spacing-item"><span>lg</span><div class="spacing-bar" style="width:24px;height:12px;background:#ffd21e"></div><code>24px</code></div>
+      <div class="spacing-item"><span>xl</span><div class="spacing-bar" style="width:32px;height:12px;background:#ffd21e"></div><code>32px</code></div>
+      <div class="spacing-item"><span>2xl</span><div class="spacing-bar" style="width:48px;height:12px;background:#ffd21e"></div><code>48px</code></div>
+  </div>
+
+  <h2>Border Radius</h2>
+  <div class="radius-scale">
+      <div class="radius-item"><div class="radius-box" style="border-radius:4px"></div><span>sm: 4px</span></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:6px"></div><span>md: 6px</span></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:999px"></div><span>full: 999px</span></div>
+  </div>
+
+  <h2>Components</h2>
+  <div class="component-demo">
+    <p style="margin-bottom:12px"><strong>Button</strong></p>
+    <button class="btn-demo">Primary Action</button>
+  </div>
+  <div class="component-demo">
+    <p style="margin-bottom:12px"><strong>Card</strong></p>
+    <div class="card-demo">
+      <h3>Card Title</h3>
+      <p>Card content with brand typography and spacing.</p>
+    </div>
+  </div>
+  <div class="component-demo">
+    <p style="margin-bottom:12px"><strong>Input</strong></p>
+    <input class="input-demo" type="text" placeholder="Text input..." />
+  </div>
+</body>
+</html>
