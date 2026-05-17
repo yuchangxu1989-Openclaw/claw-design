@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="360" viewBox="0 0 800 360" role="img" aria-label="系统架构图">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--arch-edge, #5b6478)" />
+      </marker>
+    </defs>
+    <style>
+      .edge { stroke: var(--arch-edge, #5b6478); stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .node-label { fill: #122033; font-size: 14px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+    </style>
+    <path d="M 236 90 C 266 90, 266 90, 296 90" class="edge" /><path d="M 476 90 C 506 90, 506 90, 536 90" class="edge" /><path d="M 716 90 C 626 90, 626 260, 536 260" class="edge" /><path d="M 716 260 C 746 260, 746 260, 776 260" class="edge" /><path d="M 956 260 C 986 260, 986 260, 1016 260" class="edge" />
+    <g data-node-id="node-1">
+    <rect x="56" y="56" width="180" height="68" rx="18" fill="#dbeafe" stroke="#364152" stroke-width="1.5" />
+    <text x="146" y="90" class="node-label">事件驱动</text>
+  </g><g data-node-id="node-2">
+    <rect x="296" y="56" width="180" height="68" rx="18" fill="#dcfce7" stroke="#364152" stroke-width="1.5" />
+    <text x="386" y="90" class="node-label">Event Bus</text>
+  </g><g data-node-id="node-3">
+    <rect x="536" y="56" width="180" height="68" rx="18" fill="#fef3c7" stroke="#364152" stroke-width="1.5" />
+    <text x="626" y="90" class="node-label">Producer</text>
+  </g><g data-node-id="node-4">
+    <rect x="536" y="226" width="180" height="68" rx="18" fill="#fce7f3" stroke="#364152" stroke-width="1.5" />
+    <text x="626" y="260" class="node-label">Consumer</text>
+  </g><g data-node-id="node-5">
+    <rect x="776" y="226" width="180" height="68" rx="18" fill="#ede9fe" stroke="#364152" stroke-width="1.5" />
+    <text x="866" y="260" class="node-label">Dead Letter Queue</text>
+  </g><g data-node-id="node-6">
+    <rect x="1016" y="226" width="180" height="68" rx="18" fill="#e0f2fe" stroke="#364152" stroke-width="1.5" />
+    <text x="1106" y="260" class="node-label">Schema Registry</text>
+  </g>
+  </svg>

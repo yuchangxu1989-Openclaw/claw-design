@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg class="logic-svg" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="logic-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+      </marker>
+    </defs>
+    <path d="M 130 100 L 130 180" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <path d="M 130 100 C 130 140, 370 140, 370 180" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <path d="M 130 240 L 130 320" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <g data-node="root">
+      <rect x="40" y="40" width="180" height="60" rx="12" fill="rgba(79,109,245,0.06)" stroke="#4f6df5" stroke-width="1.5"/>
+      <text x="130" y="75" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">用户投诉</text>
+      
+    </g>
+    <g data-node="child-1">
+      <rect x="40" y="180" width="180" height="60" rx="12" fill="rgba(34,201,151,0.06)" stroke="#22c997" stroke-width="1.5"/>
+      <text x="130" y="215" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">是否VIP</text>
+      
+    </g>
+    <g data-node="child-2">
+      <rect x="280" y="180" width="180" height="60" rx="12" fill="rgba(34,201,151,0.06)" stroke="#22c997" stroke-width="1.5"/>
+      <text x="370" y="215" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">VIP走专属通道</text>
+      
+    </g>
+    <g data-node="leaf-1">
+      <rect x="40" y="320" width="180" height="60" rx="12" fill="rgba(245,166,35,0.06)" stroke="#f5a623" stroke-width="1.5"/>
+      <text x="130" y="355" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">非VIP判断金额</text>
+      
+    </g>
+  </svg>

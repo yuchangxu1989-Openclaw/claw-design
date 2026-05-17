@@ -1,0 +1,29 @@
+node_modules/
+
+# 编译产物（npm 包包含，GitHub 源码仓库排除）
+*.js
+*.d.ts
+*.js.map
+!scripts/**/*.js
+!web/**/*.js
+!skill/**/*.js
+
+# 内部运行态
+.env
+.env.*
+*.log
+logs/
+state/
+.cache/
+coverage/
+dist/
+
+# 不该对外的内部文件
+.openclaw/
+memory/
+*.secret
+*.key
+openclaw.json
+
+# 临时产物
+tmp-*/

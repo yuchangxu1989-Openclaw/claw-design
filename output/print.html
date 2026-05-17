@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>测试</title>
+<style>
+:root {
+  --cd-color-primary: #1a73e8;
+  --cd-color-bg: #ffffff;
+  --cd-font-heading: 'Inter', sans-serif;
+  --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+  --cd-spacing-unit: 8px;
+  --cd-radius: 4px;
+  --cd-slide-border: rgba(26, 115, 232, 0.16);
+  --cd-slide-shadow: rgba(15, 23, 42, 0.12);
+}
+body {
+  font-family: var(--cd-font-body, 'Noto Sans SC', sans-serif);
+  background:
+    radial-gradient(circle at top left, rgba(26, 115, 232, 0.08), transparent 24%),
+    linear-gradient(180deg, #f6f9ff 0%, var(--cd-color-bg, #fff) 55%);
+  color: #1f2937;
+  margin: 0;
+  padding: 24px 0 48px;
+}
+.slide {
+  width: 960px;
+  height: 540px;
+  margin: 24px auto;
+  padding: 0;
+  box-sizing: border-box;
+  border-radius: 24px;
+  border: 1px solid var(--cd-slide-border);
+  box-shadow: 0 18px 48px var(--cd-slide-shadow);
+  background: rgba(255, 255, 255, 0.94);
+  overflow: hidden;
+  page-break-after: always;
+}
+.slide-inner {
+  height: 100%;
+  padding: 48px 64px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(135deg, rgba(26, 115, 232, 0.08), transparent 38%),
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
+}
+.slide h1 {
+  margin: 0 0 24px;
+  font-family: var(--cd-font-heading);
+  color: var(--cd-color-primary);
+  font-size: 36px;
+  line-height: 1.15;
+}
+.slide ul {
+  margin: 0;
+  padding-left: 24px;
+  display: grid;
+  gap: 16px;
+  font-size: 22px;
+  line-height: 1.55;
+}
+.slide li::marker {
+  color: var(--cd-color-primary);
+}
+.toc-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  font-size: 22px;
+}
+.toc-list li { display: flex; align-items: center; gap: 12px; }
+.toc-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--cd-color-primary, #1a73e8); color: #fff;
+  font-size: 16px; font-weight: 700; flex-shrink: 0;
+}
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  flex: 1;
+}
+.comparison-col h2 {
+  font-size: 22px;
+  color: var(--cd-color-primary);
+  margin: 0 0 16px;
+}
+.comparison-col ul {
+  font-size: 18px;
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+}
+.chart-container { flex: 1; display: flex; align-items: center; justify-content: center; }
+.chart-container svg { max-width: 100%; max-height: 100%; }
+</style>
+
+<style media="print">
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  section {
+    page-break-after: always;
+    break-after: page;
+  }
+  section:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Hide interactive/non-print elements */
+  nav, .no-print, button, [role="navigation"] {
+    display: none !important;
+  }
+  /* Prevent orphan headings */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+  /* Keep images with their captions */
+  figure, img {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+</style>
+</head>
+<body>
+<section class="slide" data-slide-type="title" data-slide-index="1">
+  <div class="slide-inner">
+    <h1>测试</h1>
+    <ul>
+    <li>测试——本次演示的核心主题，以下从背景、要点、应用和展望四个维度展开。</li>
+    <li>本次分享围绕「测试」展开，以下为结构化梳理。</li>
+    <li>目标：帮助听众快速理解测试的现状与下一步方向。</li>
+    <li>建议在正式演示时补充具体案例和数据支撑。</li>
+    </ul>
+  </div>
+</section>
+<section class="slide" data-slide-type="toc" data-slide-index="2">
+  <div class="slide-inner">
+    <h1>目录</h1>
+    <ol class="toc-list">
+    <li><span class="toc-num">1</span>测试：背景与现状</li>
+    <li><span class="toc-num">2</span>测试：核心要点</li>
+    <li><span class="toc-num">3</span>测试：应用与案例</li>
+    </ol>
+  </div>
+</section>
+<section class="slide" data-slide-type="content" data-slide-index="3">
+  <div class="slide-inner">
+    <h1>测试：背景与现状</h1>
+    <ul>
+    <li>测试的讨论背景：为什么现在需要关注这个方向。</li>
+    <li>当前阶段的核心特征：测试正处于从认知到实践的转化期。</li>
+    <li>建议补充行业数据或内部指标来量化当前状态。</li>
+    <li>需要回答的关键问题：测试的边界在哪里，优先级如何排列。</li>
+    </ul>
+  </div>
+</section>
+<section class="slide" data-slide-type="content" data-slide-index="4">
+  <div class="slide-inner">
+    <h1>测试：核心要点</h1>
+    <ul>
+    <li>要点一：测试的核心价值主张——解决什么问题、服务什么场景。</li>
+    <li>要点二：实现路径与关键依赖——需要哪些条件才能落地。</li>
+    <li>要点三：与现有方案的差异——测试相比替代方案的独特优势。</li>
+    <li>要点四：风险与约束——推进过程中需要注意的限制条件。</li>
+    </ul>
+  </div>
+</section>
+<section class="slide" data-slide-type="content" data-slide-index="5">
+  <div class="slide-inner">
+    <h1>测试：应用与案例</h1>
+    <ul>
+    <li>场景一：测试在日常工作流中的典型应用方式。</li>
+    <li>场景二：测试在关键决策环节的辅助作用。</li>
+    <li>场景三：测试在跨团队协作中的价值体现。</li>
+    <li>每个场景建议配合具体案例和效果数据来增强说服力。</li>
+    </ul>
+  </div>
+</section>
+<section class="slide" data-slide-type="summary" data-slide-index="6">
+  <div class="slide-inner">
+    <h1>测试：总结与下一步</h1>
+    <ul>
+    <li>核心结论：测试的价值已经明确，关键在于选择正确的切入点。</li>
+    <li>下一步行动：明确优先级、分配资源、设定验收标准。</li>
+    <li>建议设定明确的时间节点和里程碑。</li>
+    <li>期待反馈：哪些方向需要深入、哪些假设需要验证。</li>
+    </ul>
+  </div>
+</section>
+<style>
+  body.mode-scroll .slide {
+    display: block;
+    width: 960px;
+    max-width: 100%;
+    margin: 24px auto;
+  }
+  body.mode-paginated .slide {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    max-width: 960px;
+    max-height: 540px;
+    margin: auto;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  body.mode-paginated .slide.active { display: block; }
+  @media print {
+    .slide {
+      display: block !important;
+      position: static !important;
+      transform: none !important;
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      page-break-after: always;
+    }
+    .slide:last-child { page-break-after: avoid; }
+    #slide-indicator, #mode-toggle { display: none !important; }
+  }
+</style>
+<noscript>
+  <style>
+    .slide { display: block !important; position: static !important; transform: none !important; width: 960px; max-width: 100%; margin: 24px auto; }
+    #slide-indicator, #mode-toggle { display: none !important; }
+  </style>
+</noscript>
+<script>
+(function() {
+  var viewMode = 'scroll';
+  var slides = document.querySelectorAll('.slide');
+  var current = 0;
+  function setMode(mode) {
+    viewMode = mode;
+    document.body.className = 'mode-' + mode;
+    if (mode === 'paginated') { showSlide(current); }
+    updateToggle();
+  }
+  function showSlide(index) {
+    slides.forEach(function(s, i) { s.classList.toggle('active', i === index); });
+    updateIndicator();
+  }
+  function updateIndicator() {
+    var el = document.getElementById('slide-indicator');
+    if (el) el.textContent = viewMode === 'paginated' ? (current + 1) + ' / ' + slides.length : '';
+  }
+  function updateToggle() {
+    var btn = document.getElementById('mode-toggle');
+    if (btn) btn.textContent = viewMode === 'scroll' ? '切换翻页' : '切换滚动';
+  }
+  function next() { if (current < slides.length - 1) { current++; showSlide(current); } }
+  function prev() { if (current > 0) { current--; showSlide(current); } }
+  document.addEventListener('keydown', function(e) {
+    if (viewMode !== 'paginated') return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  });
+  document.addEventListener('click', function(e) {
+    if (viewMode !== 'paginated') return;
+    if (e.target.id === 'mode-toggle') return;
+    var x = e.clientX / window.innerWidth;
+    if (x > 0.6) next();
+    else if (x < 0.4) prev();
+  });
+  var toggle = document.createElement('button');
+  toggle.id = 'mode-toggle';
+  toggle.style.cssText = 'position:fixed;bottom:16px;left:24px;padding:6px 12px;font-size:13px;cursor:pointer;z-index:999;border:1px solid #ccc;border-radius:4px;background:#fff;';
+  toggle.addEventListener('click', function() { setMode(viewMode === 'scroll' ? 'paginated' : 'scroll'); });
+  document.body.appendChild(toggle);
+  setMode(viewMode);
+})();
+</script>
+<div id="slide-indicator" style="position:fixed;bottom:16px;right:24px;font-size:14px;color:#666;z-index:999;"></div>
+</body>
+</html>

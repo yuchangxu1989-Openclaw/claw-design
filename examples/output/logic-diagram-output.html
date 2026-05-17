@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light" data-relation="hierarchy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户投诉→是否VIP→VIP走专属通道→非VIP判断金额→大… — Logic Diagram</title>
+  <style>
+    :root {
+      --cd-color-primary: #1a73e8;
+      --cd-color-bg: #ffffff;
+      --cd-font-heading: 'Inter', sans-serif;
+      --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+      --cd-spacing-unit: 8px;
+      --cd-radius: 4px;
+      --logic-bg: #f7f8fb;
+      --logic-surface: #ffffff;
+      --logic-border: #e2e5ea;
+      --logic-text: #111827;
+      --logic-muted: #6b7280;
+      --logic-accent: #1a73e8;
+      --logic-accent-soft: rgba(79,70,229,0.08);
+      --logic-shadow: rgba(0,0,0,0.05);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 32px;
+      background: var(--logic-bg);
+      font-family: var(--cd-font-body, 'Noto Sans SC', sans-serif);
+      color: var(--logic-text);
+    }
+    .logic-shell {
+      max-width: 1100px; margin: 0 auto;
+      background: var(--logic-surface);
+      border: 1px solid var(--logic-border);
+      border-radius: 18px;
+      padding: 28px;
+      box-shadow: 0 12px 40px var(--logic-shadow);
+    }
+    .logic-header { margin-bottom: 20px; }
+    .logic-header__title { margin: 0 0 6px; font-size: 1.5rem; font-family: var(--cd-font-heading, 'Inter', sans-serif); }
+    .logic-header__summary { margin: 0; color: var(--logic-muted); font-size: 0.92rem; }
+    .logic-header__meta { display: flex; gap: 8px; margin-top: 10px; }
+    .logic-badge {
+      padding: 4px 12px; border-radius: 999px; font-size: 0.72rem; font-weight: 700;
+      background: var(--logic-accent); color: #fff; text-transform: uppercase;
+    }
+    .logic-stage { width: 100%; overflow-x: auto; }
+    .logic-stage svg { width: 100%; height: auto; display: block; }
+  </style>
+</head>
+<body>
+  <main class="logic-shell">
+    <header class="logic-header">
+      <h1 class="logic-header__title">用户投诉→是否VIP→VIP走专属通道→非VIP判断金额→大…</h1>
+      <p class="logic-header__summary">用户投诉→是否VIP→VIP走专属通道→非VIP判断金额→大额人工→小额自动退款</p>
+
+    </header>
+    <section class="logic-stage" aria-label="logic-diagram">
+      <svg class="logic-svg" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="logic-arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+      </marker>
+    </defs>
+    <path d="M 130 100 L 130 180" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <path d="M 130 100 C 130 140, 370 140, 370 180" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <path d="M 130 240 L 130 320" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#logic-arrow)"/>
+    <g data-node="root">
+      <rect x="40" y="40" width="180" height="60" rx="12" fill="rgba(79,109,245,0.06)" stroke="#4f6df5" stroke-width="1.5"/>
+      <text x="130" y="75" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">用户投诉</text>
+      
+    </g>
+    <g data-node="child-1">
+      <rect x="40" y="180" width="180" height="60" rx="12" fill="rgba(34,201,151,0.06)" stroke="#22c997" stroke-width="1.5"/>
+      <text x="130" y="215" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">是否VIP</text>
+      
+    </g>
+    <g data-node="child-2">
+      <rect x="280" y="180" width="180" height="60" rx="12" fill="rgba(34,201,151,0.06)" stroke="#22c997" stroke-width="1.5"/>
+      <text x="370" y="215" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">VIP走专属通道</text>
+      
+    </g>
+    <g data-node="leaf-1">
+      <rect x="40" y="320" width="180" height="60" rx="12" fill="rgba(245,166,35,0.06)" stroke="#f5a623" stroke-width="1.5"/>
+      <text x="130" y="355" text-anchor="middle" fill="#111827" font-size="13" font-weight="600">非VIP判断金额</text>
+      
+    </g>
+  </svg>
+    </section>
+  </main>
+</body>
+</html>

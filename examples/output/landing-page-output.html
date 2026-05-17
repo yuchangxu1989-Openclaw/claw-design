@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ClawDesign — Landing Page</title>
+  <style>
+    :root {
+      --cd-color-primary: #1a73e8;
+      --cd-color-bg: #ffffff;
+      --cd-font-heading: 'Inter', sans-serif;
+      --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif;
+      --cd-spacing-unit: 8px;
+      --cd-radius: 4px;
+      --cd-font-heading: 'Inter', sans-serif, 'JetBrains Mono', 'IBM Plex Mono', 'Sarasa Mono SC', 'SFMono-Regular', 'Cascadia Mono', ui-monospace, monospace, 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+      --cd-font-body: 'Noto Sans SC', 'Noto Sans', sans-serif, 'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', system-ui, sans-serif;
+      --cd-font-mono: 'JetBrains Mono', 'IBM Plex Mono', monospace, 'JetBrains Mono', 'IBM Plex Mono', 'Sarasa Mono SC', 'SFMono-Regular', 'Cascadia Mono', ui-monospace, monospace;
+      --cd-paragraph-gap-tight: 0.48em;
+      --cd-paragraph-gap: 0.82em;
+      --cd-paragraph-gap-relaxed: 1.12em;
+      --cd-reading-measure: 64ch;
+      --cd-reading-measure-wide: 78ch;
+      --cd-reading-measure-compact: 42ch;
+      --cd-cjk-leading-trim: 0.08em;
+      --cd-type-h1-size: clamp(2.6rem, 6.8vw, 5.3rem);
+      --cd-type-h1-line-height: 0.96;
+      --cd-type-h1-letter-spacing: -0.04em;
+      --cd-type-h1-weight: 780;
+      --cd-type-h1-paragraph-gap: 0.48em;
+      --cd-type-h2-size: clamp(2rem, 4.4vw, 3.6rem);
+      --cd-type-h2-line-height: 1.02;
+      --cd-type-h2-letter-spacing: -0.03em;
+      --cd-type-h2-weight: 730;
+      --cd-type-h2-paragraph-gap: 0.42em;
+      --cd-type-h3-size: clamp(1.6rem, 3vw, 2.5rem);
+      --cd-type-h3-line-height: 1.1;
+      --cd-type-h3-letter-spacing: -0.02em;
+      --cd-type-h3-weight: 700;
+      --cd-type-h3-paragraph-gap: 0.34em;
+      --cd-type-h4-size: clamp(1.24rem, 2.2vw, 1.82rem);
+      --cd-type-h4-line-height: 1.18;
+      --cd-type-h4-letter-spacing: -0.01em;
+      --cd-type-h4-weight: 650;
+      --cd-type-h4-paragraph-gap: 0.28em;
+      --cd-type-h5-size: clamp(1rem, 1.7vw, 1.32rem);
+      --cd-type-h5-line-height: 1.24;
+      --cd-type-h5-letter-spacing: 0em;
+      --cd-type-h5-weight: 650;
+      --cd-type-h5-paragraph-gap: 0.22em;
+      --cd-type-lead-size: clamp(1rem, 1.8vw, 1.18rem);
+      --cd-type-lead-line-height: 1.54;
+      --cd-type-lead-letter-spacing: -0.008em;
+      --cd-type-lead-weight: 500;
+      --cd-type-body-size: 0.98rem;
+      --cd-type-body-line-height: 1.7;
+      --cd-type-body-letter-spacing: 0em;
+      --cd-type-body-weight: 420;
+      --cd-type-caption-size: 0.86rem;
+      --cd-type-caption-line-height: 1.5;
+      --cd-type-caption-letter-spacing: 0.02em;
+      --cd-type-caption-weight: 450;
+      --cd-type-label-size: 0.74rem;
+      --cd-type-label-line-height: 1.32;
+      --cd-type-label-letter-spacing: 0.16em;
+      --cd-type-label-weight: 700;
+      --cd-grid-unit: 8px;
+      --cd-space-xxs: 0.25rem;
+      --cd-space-xs: 0.5rem;
+      --cd-space-sm: 0.75rem;
+      --cd-space-md: 1rem;
+      --cd-space-lg: 1.5rem;
+      --cd-space-xl: 2rem;
+      --cd-space-2xl: 3rem;
+      --cd-space-3xl: 4rem;
+      --cd-space-4xl: 5rem;
+      --cd-space-5xl: 6rem;
+      --cd-page-margin: 16px;
+      --cd-page-margin-inline: 16px;
+      --cd-section-gap: 32px;
+      --cd-section-inset: 24px;
+      --cd-card-padding: 16px;
+      --cd-card-gap: 12px;
+      --cd-cluster-gap: 12px;
+      --cd-stack-gap: 16px;
+      --cd-button-padding-inline: 20px;
+      --cd-button-padding-block: 12px;
+      --cd-container-max-width: 1180px;
+      --cd-card-radius: clamp(18px, 2vw, 24px);
+      --cd-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --cd-ease-spring: cubic-bezier(0.2, 0.9, 0.22, 1.12);
+      --cd-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --cd-duration-fast: 180ms;
+      --cd-duration-normal: 320ms;
+      --cd-duration-slow: 520ms;
+      --cd-hover-translate-y: -4px;
+      --cd-press-scale: 0.98;
+      --cd-focus-ring-color: rgba(59,130,246,0.42);
+      --cd-focus-ring-size: 3px;
+      --landing-primary: #818cf8;
+      --landing-secondary: #67e8f9;
+      --landing-accent: #22d3ee;
+      --landing-background: #0b1120;
+      --landing-surface: #111827;
+      --landing-text: #f9fafb;
+      --landing-muted: #9ca3af;
+      --landing-border: rgba(255,255,255,0.12);
+      --landing-shadow: rgba(2,6,23,0.42);
+      --landing-glow: color-mix(in srgb, #818cf8 22%, transparent 78%);
+      --landing-max-width: 1180px;
+      --landing-radius: clamp(18px, 3vw, 28px);
+    }
+    * { box-sizing: border-box; }
+    
+    .cd-heading-1,
+    .cd-heading-2,
+    .cd-heading-3,
+    .cd-heading-4,
+    .cd-heading-5,
+    .cd-display {
+      margin: 0;
+      font-family: var(--cd-font-heading);
+      text-wrap: balance;
+    }
+    .cd-heading-1,
+    .cd-display {
+      font-size: var(--cd-type-h1-size);
+      line-height: var(--cd-type-h1-line-height);
+      letter-spacing: var(--cd-type-h1-letter-spacing);
+      font-weight: var(--cd-type-h1-weight);
+    }
+    .cd-heading-2 {
+      font-size: var(--cd-type-h2-size);
+      line-height: var(--cd-type-h2-line-height);
+      letter-spacing: var(--cd-type-h2-letter-spacing);
+      font-weight: var(--cd-type-h2-weight);
+    }
+    .cd-heading-3 {
+      font-size: var(--cd-type-h3-size);
+      line-height: var(--cd-type-h3-line-height);
+      letter-spacing: var(--cd-type-h3-letter-spacing);
+      font-weight: var(--cd-type-h3-weight);
+    }
+    .cd-heading-4 {
+      font-size: var(--cd-type-h4-size);
+      line-height: var(--cd-type-h4-line-height);
+      letter-spacing: var(--cd-type-h4-letter-spacing);
+      font-weight: var(--cd-type-h4-weight);
+    }
+    .cd-heading-5 {
+      font-size: var(--cd-type-h5-size);
+      line-height: var(--cd-type-h5-line-height);
+      letter-spacing: var(--cd-type-h5-letter-spacing);
+      font-weight: var(--cd-type-h5-weight);
+    }
+    .cd-lead {
+      margin: 0;
+      font-family: var(--cd-font-body);
+      font-size: var(--cd-type-lead-size);
+      line-height: var(--cd-type-lead-line-height);
+      letter-spacing: var(--cd-type-lead-letter-spacing);
+      font-weight: var(--cd-type-lead-weight);
+      max-width: var(--cd-reading-measure);
+    }
+    .cd-copy {
+      font-family: var(--cd-font-body);
+      font-size: var(--cd-type-body-size);
+      line-height: var(--cd-type-body-line-height);
+      letter-spacing: var(--cd-type-body-letter-spacing);
+      font-weight: var(--cd-type-body-weight);
+      max-width: var(--cd-reading-measure);
+    }
+    .cd-copy > p {
+      margin: 0;
+    }
+    .cd-copy > p + p {
+      margin-top: var(--cd-paragraph-gap);
+    }
+    .cd-caption {
+      margin: 0;
+      font-family: var(--cd-font-body);
+      font-size: var(--cd-type-caption-size);
+      line-height: var(--cd-type-caption-line-height);
+      letter-spacing: var(--cd-type-caption-letter-spacing);
+      font-weight: var(--cd-type-caption-weight);
+    }
+    .cd-label {
+      margin: 0;
+      font-family: var(--cd-font-mono);
+      font-size: var(--cd-type-label-size);
+      line-height: var(--cd-type-label-line-height);
+      letter-spacing: var(--cd-type-label-letter-spacing);
+      font-weight: var(--cd-type-label-weight);
+      text-transform: uppercase;
+    }
+    .cd-mono {
+      font-family: var(--cd-font-mono);
+    }
+    .cd-cjk-mix {
+      font-family: var(--cd-font-body);
+      word-break: normal;
+      overflow-wrap: anywhere;
+      line-break: auto;
+      text-rendering: optimizeLegibility;
+      font-variant-east-asian: proportional-width;
+    }
+    .cd-cjk-mix h1,
+    .cd-cjk-mix h2,
+    .cd-cjk-mix h3,
+    .cd-cjk-mix h4,
+    .cd-cjk-mix h5,
+    .cd-cjk-mix .cd-heading-1,
+    .cd-cjk-mix .cd-heading-2,
+    .cd-cjk-mix .cd-heading-3,
+    .cd-cjk-mix .cd-heading-4,
+    .cd-cjk-mix .cd-heading-5 {
+      text-wrap: balance;
+      margin-block-end: 0.34em;
+    }
+    .cd-cjk-mix p,
+    .cd-cjk-mix li,
+    .cd-cjk-mix blockquote {
+      hanging-punctuation: first allow-end last;
+    }
+  
+    
+    .cd-stack > * + * { margin-top: var(--cd-stack-gap); }
+    .cd-cluster { display: flex; flex-wrap: wrap; gap: var(--cd-cluster-gap); }
+    .cd-card-shell {
+      padding: var(--cd-card-padding);
+      border-radius: var(--cd-card-radius);
+      display: grid;
+      gap: var(--cd-card-gap);
+    }
+    .cd-page-shell {
+      width: min(100%, var(--cd-container-max-width));
+      margin: 0 auto;
+      padding-inline: var(--cd-page-margin-inline);
+    }
+    .cd-section-shell {
+      padding-block: var(--cd-section-gap);
+    }
+    @media (min-width: 768px) {
+      :root {
+        --cd-page-margin: 24px;
+        --cd-page-margin-inline: 24px;
+        --cd-section-gap: 48px;
+        --cd-section-inset: 32px;
+        --cd-card-padding: 24px;
+        --cd-card-gap: 16px;
+        --cd-cluster-gap: 16px;
+        --cd-stack-gap: 24px;
+        --cd-button-padding-inline: 24px;
+        --cd-button-padding-block: 14px;
+      }
+    }
+    @media (min-width: 1200px) {
+      :root {
+        --cd-page-margin: 40px;
+        --cd-page-margin-inline: 40px;
+        --cd-section-gap: 64px;
+        --cd-section-inset: 48px;
+        --cd-card-padding: 24px;
+        --cd-card-gap: 20px;
+        --cd-cluster-gap: 24px;
+        --cd-stack-gap: 32px;
+        --cd-button-padding-inline: 28px;
+        --cd-button-padding-block: 14px;
+      }
+    }
+  
+    
+    @keyframes cd-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cd-slide-up {
+  from { opacity: 0; transform: translate3d(0, 24px, 0); }
+  to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes cd-scale-in {
+  from { opacity: 0; transform: scale3d(0.96, 0.96, 1); }
+  to { opacity: 1; transform: scale3d(1, 1, 1); }
+}
+
+@keyframes cd-focus-pulse {
+  from { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+  55% { box-shadow: 0 0 0 6px rgba(59,130,246,0.22); }
+  to { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+
+    .cd-animate-fade-in {
+      animation: cd-fade-in 420ms var(--cd-ease-out) both;
+    }
+    .cd-animate-slide-up {
+      animation: cd-slide-up 520ms var(--cd-ease-spring) both;
+    }
+    .cd-animate-scale-in {
+      animation: cd-scale-in 460ms var(--cd-ease-spring) both;
+      transform-origin: center;
+    }
+    .cd-hover-lift {
+      transition:
+        transform 220ms var(--cd-ease-out),
+        box-shadow 220ms var(--cd-ease-out),
+        border-color 220ms var(--cd-ease-out);
+    }
+    .cd-hover-lift:hover {
+      transform: translateY(var(--cd-hover-translate-y));
+    }
+    .cd-press-scale {
+      transition: transform 140ms var(--cd-ease-bounce);
+    }
+    .cd-press-scale:active {
+      transform: scale(var(--cd-press-scale));
+    }
+    .cd-focus-ring {
+      outline: none;
+      transition:
+        box-shadow 180ms var(--cd-ease-out),
+        border-color 180ms var(--cd-ease-out);
+    }
+    .cd-focus-ring:focus-visible {
+      box-shadow: 0 0 0 var(--cd-focus-ring-size) var(--cd-focus-ring-color);
+      animation: cd-focus-pulse 420ms var(--cd-ease-out) both;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--cd-font-body, 'Noto Sans SC', 'Noto Sans', sans-serif);
+      color: var(--landing-text);
+      background:
+        radial-gradient(circle at top left, var(--landing-glow), transparent 32%),
+        linear-gradient(180deg, var(--landing-background) 0%, color-mix(in srgb, var(--landing-background) 86%, var(--landing-surface) 14%) 100%);
+      line-height: var(--cd-type-body-line-height);
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    .landing-shell {
+      width: min(100%, var(--landing-max-width));
+      margin: 0 auto;
+      padding: 0 var(--cd-page-margin-inline) var(--cd-section-gap);
+    }
+    .landing-nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      width: min(100%, var(--landing-max-width));
+      margin: 0 auto;
+      padding: 20px var(--cd-page-margin-inline);
+      backdrop-filter: blur(18px);
+      background: color-mix(in srgb, var(--landing-background) 78%, transparent 22%);
+      border-bottom: 1px solid color-mix(in srgb, var(--landing-border) 60%, transparent 40%);
+    }
+    .landing-nav__brand {
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--landing-primary);
+    }
+    .landing-nav__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      color: var(--landing-muted);
+      font-size: 0.95rem;
+    }
+    .landing-nav__links a:hover { color: var(--landing-text); }
+    .landing-section { padding: var(--cd-section-gap) 0 0; }
+    .landing-section + .landing-section { margin-top: 0; }
+    .landing-card {
+      background: color-mix(in srgb, var(--landing-surface) 88%, transparent 12%);
+      border: 1px solid var(--landing-border);
+      border-radius: var(--landing-radius);
+      box-shadow: 0 28px 70px var(--landing-shadow);
+      transition: transform var(--cd-duration-normal) var(--cd-ease-out), box-shadow var(--cd-duration-normal) var(--cd-ease-out), border-color var(--cd-duration-normal) var(--cd-ease-out);
+    }
+    .landing-hero {
+      position: relative;
+      overflow: hidden;
+      padding: var(--cd-section-inset);
+      display: grid;
+      gap: var(--cd-stack-gap);
+      isolation: isolate;
+      animation: cd-fade-in var(--cd-duration-slow) var(--cd-ease-out) both;
+    }
+    .landing-hero::before,
+    .landing-hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .landing-hero::before {
+      width: min(56vw, 440px);
+      height: min(56vw, 440px);
+      top: -120px;
+      right: -100px;
+      background: radial-gradient(circle, var(--landing-glow) 0%, transparent 72%);
+    }
+    .landing-hero::after {
+      width: 220px;
+      height: 220px;
+      bottom: -90px;
+      left: -60px;
+      background: radial-gradient(circle, color-mix(in srgb, var(--landing-accent) 38%, transparent 62%) 0%, transparent 76%);
+    }
+    .landing-hero__content,
+    .landing-hero__panel { position: relative; z-index: 1; }
+    .landing-hero__eyebrow,
+    .landing-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      width: fit-content;
+      border-radius: 999px;
+      border: 1px solid var(--landing-border);
+      background: color-mix(in srgb, var(--landing-surface) 76%, transparent 24%);
+      color: var(--landing-muted);
+      font-family: var(--cd-font-mono, 'JetBrains Mono', monospace);
+      font-size: var(--cd-type-label-size);
+      font-weight: 700;
+      letter-spacing: var(--cd-type-label-letter-spacing);
+      text-transform: uppercase;
+    }
+    .landing-hero__title {
+      margin: 18px 0 12px;
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: var(--cd-type-h1-size);
+      line-height: var(--cd-type-h1-line-height);
+      letter-spacing: var(--cd-type-h1-letter-spacing);
+      font-weight: var(--cd-type-h1-weight);
+      text-wrap: balance;
+    }
+    .landing-hero__subtitle {
+      margin: 0;
+      max-width: var(--cd-reading-measure-wide);
+      color: var(--landing-muted);
+      font-size: var(--cd-type-lead-size);
+      line-height: var(--cd-type-lead-line-height);
+      letter-spacing: var(--cd-type-lead-letter-spacing);
+    }
+    .landing-hero__layout {
+      display: grid;
+      gap: var(--cd-stack-gap);
+      align-items: end;
+    }
+    .landing-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--cd-cluster-gap);
+      margin-top: var(--cd-space-xl);
+    }
+    .landing-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 48px;
+      padding: var(--cd-button-padding-block) var(--cd-button-padding-inline);
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition:
+        transform var(--cd-duration-fast) var(--cd-ease-out),
+        opacity var(--cd-duration-fast) var(--cd-ease-out),
+        border-color var(--cd-duration-fast) var(--cd-ease-out),
+        box-shadow var(--cd-duration-fast) var(--cd-ease-out);
+    }
+    .landing-button:hover { transform: translateY(var(--cd-hover-translate-y)); }
+    .landing-button:active { transform: scale(var(--cd-press-scale)); }
+    .landing-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 var(--cd-focus-ring-size) var(--cd-focus-ring-color);
+    }
+    .landing-button--primary {
+      background: linear-gradient(135deg, var(--landing-primary) 0%, var(--landing-accent) 100%);
+      color: #fff;
+      box-shadow: 0 18px 40px color-mix(in srgb, var(--landing-primary) 28%, transparent 72%);
+    }
+    .landing-button--secondary {
+      border-color: var(--landing-border);
+      background: color-mix(in srgb, var(--landing-surface) 86%, transparent 14%);
+      color: var(--landing-text);
+    }
+    .landing-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: var(--cd-card-gap);
+      margin-top: var(--cd-space-xl);
+    }
+    .landing-stat {
+      padding: var(--cd-card-padding);
+      border-radius: 20px;
+      border: 1px solid var(--landing-border);
+      background: color-mix(in srgb, var(--landing-surface) 84%, transparent 16%);
+      animation: cd-scale-in var(--cd-duration-slow) var(--cd-ease-spring) both;
+    }
+    .landing-stat__value {
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 1.5rem;
+      font-weight: 800;
+    }
+    .landing-stat__label {
+      margin-top: 6px;
+      color: var(--landing-muted);
+      font-size: 0.92rem;
+    }
+    .landing-hero__panel {
+      padding: var(--cd-card-padding);
+      border-radius: 24px;
+      border: 1px solid var(--landing-border);
+      background: color-mix(in srgb, var(--landing-surface) 88%, transparent 12%);
+      display: grid;
+      gap: var(--cd-card-gap);
+      align-content: start;
+      min-height: 260px;
+      animation: cd-scale-in var(--cd-duration-slow) var(--cd-ease-spring) both;
+    }
+    .landing-panel__label {
+      color: var(--landing-muted);
+      font-family: var(--cd-font-mono, 'JetBrains Mono', monospace);
+      font-size: var(--cd-type-label-size);
+      text-transform: uppercase;
+      letter-spacing: var(--cd-type-label-letter-spacing);
+    }
+    .landing-panel__title {
+      margin: 0;
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: var(--cd-type-h3-size);
+      line-height: var(--cd-type-h3-line-height);
+    }
+    .landing-panel__copy {
+      margin: 0;
+      color: var(--landing-muted);
+    }
+    .landing-panel__list {
+      display: grid;
+      gap: 12px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .landing-panel__item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--landing-text);
+    }
+    .landing-panel__item::before {
+      content: '•';
+      color: var(--landing-primary);
+      font-weight: 900;
+    }
+    .landing-section-head {
+      margin-bottom: var(--cd-space-xl);
+      display: grid;
+      gap: 10px;
+    }
+    .landing-section-title {
+      margin: 0;
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: var(--cd-type-h2-size);
+      line-height: var(--cd-type-h2-line-height);
+      letter-spacing: var(--cd-type-h2-letter-spacing);
+    }
+    .landing-section-subtitle {
+      margin: 0;
+      color: var(--landing-muted);
+      max-width: var(--cd-reading-measure);
+      font-size: var(--cd-type-body-size);
+      line-height: var(--cd-type-body-line-height);
+    }
+    .landing-feature-grid,
+    .landing-testimonial-grid,
+    .landing-pricing-grid,
+    .landing-footer-grid {
+      display: grid;
+      gap: var(--cd-card-gap);
+    }
+    .landing-feature-card,
+    .landing-testimonial-card,
+    .landing-pricing-card,
+    .landing-footer-card {
+      padding: var(--cd-card-padding);
+      border-radius: 24px;
+      border: 1px solid var(--landing-border);
+      background: color-mix(in srgb, var(--landing-surface) 88%, transparent 12%);
+      transition: transform var(--cd-duration-fast) var(--cd-ease-out), box-shadow var(--cd-duration-fast) var(--cd-ease-out);
+    }
+    .landing-feature-card:hover,
+    .landing-testimonial-card:hover,
+    .landing-pricing-card:hover,
+    .landing-footer-card:hover {
+      transform: translateY(var(--cd-hover-translate-y));
+    }
+    .landing-feature-card__icon {
+      font-size: 1.6rem;
+      margin-bottom: 10px;
+    }
+    .landing-feature-card__title,
+    .landing-pricing-card__title,
+    .landing-testimonial-card__name,
+    .landing-footer-card__title {
+      margin: 0;
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 1.08rem;
+    }
+    .landing-feature-card__desc,
+    .landing-pricing-card__desc,
+    .landing-testimonial-card__role,
+    .landing-footer-note,
+    .landing-footer-links a {
+      color: var(--landing-muted);
+    }
+    .landing-pricing-card {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+    .landing-pricing-card--highlighted {
+      border-color: color-mix(in srgb, var(--landing-primary) 48%, var(--landing-border) 52%);
+      box-shadow: 0 28px 74px color-mix(in srgb, var(--landing-primary) 18%, transparent 82%);
+      transform: translateY(-4px);
+    }
+    .landing-pricing-card__badge {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--landing-primary) 15%, transparent 85%);
+      color: var(--landing-primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .landing-price {
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+    .landing-pricing-list,
+    .landing-footer-links {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+    .landing-pricing-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .landing-pricing-list li::before {
+      content: '✓';
+      color: var(--landing-primary);
+      font-weight: 800;
+    }
+    .landing-testimonial-card__quote {
+      margin: 0 0 18px;
+      font-size: 1rem;
+    }
+    .landing-cta {
+      padding: var(--cd-section-inset);
+      display: grid;
+      gap: var(--cd-card-gap);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--landing-primary) 18%, var(--landing-surface) 82%) 0%, color-mix(in srgb, var(--landing-accent) 20%, var(--landing-surface) 80%) 100%);
+      animation: cd-fade-in var(--cd-duration-slow) var(--cd-ease-out) both;
+    }
+    .landing-footer {
+      padding: 24px;
+    }
+    .landing-footer-top {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .landing-footer-brand {
+      font-family: var(--cd-font-heading, 'Inter', sans-serif);
+      font-size: 1.05rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .landing-footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 18px;
+      border-top: 1px solid var(--landing-border);
+      color: var(--landing-muted);
+      font-size: 0.9rem;
+    }
+
+    .landing--startup .landing-hero__title { max-width: 10ch; }
+    .landing--startup .landing-hero__panel {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--landing-surface) 88%, transparent 12%) 0%, color-mix(in srgb, var(--landing-primary) 7%, var(--landing-surface) 93%) 100%);
+    }
+    .landing--corporate .landing-card,
+    .landing--corporate .landing-hero__panel,
+    .landing--corporate .landing-feature-card,
+    .landing--corporate .landing-pricing-card,
+    .landing--corporate .landing-testimonial-card,
+    .landing--corporate .landing-footer-card {
+      border-radius: 18px;
+    }
+    .landing--corporate .landing-hero__title { letter-spacing: -0.035em; }
+    .landing--creative .landing-hero::before {
+      background: radial-gradient(circle, color-mix(in srgb, var(--landing-accent) 28%, transparent 72%) 0%, transparent 68%);
+    }
+    .landing--creative .landing-feature-card:nth-child(odd),
+    .landing--creative .landing-testimonial-card:nth-child(even) {
+      transform: rotate(-1deg);
+    }
+    .landing--creative .landing-feature-card:nth-child(even),
+    .landing--creative .landing-pricing-card:nth-child(odd) {
+      transform: rotate(1deg);
+    }
+    .landing--saas .landing-hero__panel,
+    .landing--saas .landing-pricing-card--highlighted {
+      background: linear-gradient(180deg, color-mix(in srgb, var(--landing-primary) 9%, var(--landing-surface) 91%) 0%, color-mix(in srgb, var(--landing-accent) 6%, var(--landing-surface) 94%) 100%);
+    }
+    .landing--saas .landing-stat__value { color: var(--landing-primary); }
+
+    .landing--portfolio .landing-hero__title {
+      font-style: italic;
+      letter-spacing: -0.03em;
+    }
+    .landing--portfolio .landing-hero__panel {
+      background: transparent;
+      border: 2px solid var(--landing-border);
+    }
+    .landing--portfolio .landing-feature-card {
+      border: none;
+      background: transparent;
+      border-bottom: 1px solid var(--landing-border);
+      border-radius: 0;
+      padding: 28px 0;
+    }
+    .landing--portfolio .landing-feature-card__icon {
+      font-size: 2rem;
+    }
+    .landing--portfolio .landing-cta {
+      background: transparent;
+      border: 2px solid var(--landing-border);
+    }
+    .landing--portfolio .landing-pricing-card,
+    .landing--portfolio .landing-testimonial-card {
+      border: none;
+      background: color-mix(in srgb, var(--landing-surface) 60%, transparent 40%);
+      backdrop-filter: blur(12px);
+    }
+
+    .landing--event .landing-hero {
+      background:
+        linear-gradient(135deg, color-mix(in srgb, var(--landing-primary) 12%, var(--landing-surface) 88%) 0%, color-mix(in srgb, var(--landing-accent) 8%, var(--landing-surface) 92%) 100%);
+    }
+    .landing--event .landing-hero::before {
+      background: radial-gradient(circle, color-mix(in srgb, var(--landing-primary) 30%, transparent 70%) 0%, transparent 60%);
+      animation: event-pulse 5s ease-in-out infinite;
+    }
+    @keyframes event-pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .landing--event .landing-hero__title {
+      text-transform: uppercase;
+      max-width: 10ch;
+    }
+    .landing--event .landing-feature-card {
+      text-align: center;
+    }
+    .landing--event .landing-feature-card__icon {
+      font-size: 2.4rem;
+    }
+    .landing--event .landing-cta {
+      text-align: center;
+      background: linear-gradient(135deg, color-mix(in srgb, var(--landing-primary) 22%, var(--landing-surface) 78%) 0%, color-mix(in srgb, var(--landing-accent) 18%, var(--landing-surface) 82%) 100%);
+    }
+    .landing--event .landing-pricing-card {
+      text-align: center;
+    }
+
+    .theme--dark {
+      color-scheme: dark;
+    }
+    .theme--light {
+      color-scheme: light;
+    }
+
+    @media (min-width: 860px) {
+      .landing-hero__layout {
+        grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.72fr);
+      }
+      .landing-feature-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .landing-pricing-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .landing-testimonial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .landing-footer-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .landing-footer-top { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr); align-items: start; }
+    }
+
+    @media (max-width: 767px) {
+      .landing-nav {
+        position: static;
+        padding-bottom: 12px;
+      }
+      .landing-nav__links {
+        display: none;
+      }
+      .landing-shell {
+        padding: 0 16px 40px;
+      }
+      .landing-hero,
+      .landing-cta,
+      .landing-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .landing-pricing-card--highlighted {
+        transform: none;
+      }
+      .landing--creative .landing-feature-card,
+      .landing--creative .landing-testimonial-card,
+      .landing--creative .landing-pricing-card {
+        transform: none;
+      }
+      .landing-footer-bottom {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="landing-nav">
+    <div class="landing-nav__brand">ClawDesign</div>
+    <div class="landing-nav__links">
+      <a href="#features">卖点</a>
+      <a href="#pricing">定价</a>
+      <a href="#testimonials">口碑</a>
+      <a href="#cta">开始</a>
+    </div>
+  </nav>
+
+  <main class="landing-shell landing--saas theme--dark cd-cjk-mix">
+    <section class="landing-section" id="hero" data-section="hero">
+      <div class="landing-card landing-hero">
+        <div class="landing-hero__layout">
+          <div class="landing-hero__content">
+            <div class="landing-hero__eyebrow">AI 行业</div>
+            <h1 class="landing-hero__title">ClawDesign</h1>
+            <p class="landing-hero__subtitle">围绕SaaS 产品，把核心价值和行动入口收束到一页里。</p>
+            <div class="landing-actions">
+              <a class="landing-button landing-button--primary" href="#cta">了解ClawDesign</a>
+              <a class="landing-button landing-button--secondary" href="#features">查看ClawDesign亮点</a>
+            </div>
+            <div class="landing-stats">
+    <div class="landing-stat">
+      <div class="landing-stat__value">ClawDesign</div>
+      <div class="landing-stat__label">核心主题</div>
+    </div>
+    <div class="landing-stat">
+      <div class="landing-stat__value">讲清ClawDesign</div>
+      <div class="landing-stat__label">价值表达</div>
+    </div>
+    <div class="landing-stat">
+      <div class="landing-stat__value">体验ClawDesign</div>
+      <div class="landing-stat__label">下一步</div>
+    </div>
+  </div>
+          </div>
+          <aside class="landing-hero__panel" aria-label="hero-highlight-panel">
+            <div class="landing-panel__label">Launch Snapshot</div>
+            <h2 class="landing-panel__title">为什么选择我们</h2>
+            <p class="landing-panel__copy">从效率、灵活性到数据洞察，每个环节都经过打磨。</p>
+            <ul class="landing-panel__list">
+              <li class="landing-panel__item">快速上手，零门槛 · ClawDesign 开箱即用，5 分钟完成配置，无需额外依赖。</li><li class="landing-panel__item">灵活扩展，按需组合 · 模块化架构支持自由组合，满足从轻量到复杂的多种场景。</li><li class="landing-panel__item">数据驱动，持续优化 · 内置分析面板实时追踪关键指标，让每次迭代都有据可依。</li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    
+    <section class="landing-section" id="features" data-section="features">
+      <div class="landing-section-head">
+        <div class="landing-kicker">Core Value</div>
+        <h2 class="landing-section-title">为什么选择我们</h2>
+        <p class="landing-section-subtitle">从效率、灵活性到数据洞察，每个环节都经过打磨。</p>
+      </div>
+      <div class="landing-feature-grid">
+        <article class="landing-feature-card">
+    <div class="landing-feature-card__icon">✦</div>
+    <h3 class="landing-feature-card__title">快速上手，零门槛</h3>
+    <p class="landing-feature-card__desc">ClawDesign 开箱即用，5 分钟完成配置，无需额外依赖。</p>
+  </article><article class="landing-feature-card">
+    <div class="landing-feature-card__icon">▣</div>
+    <h3 class="landing-feature-card__title">灵活扩展，按需组合</h3>
+    <p class="landing-feature-card__desc">模块化架构支持自由组合，满足从轻量到复杂的多种场景。</p>
+  </article><article class="landing-feature-card">
+    <div class="landing-feature-card__icon">→</div>
+    <h3 class="landing-feature-card__title">数据驱动，持续优化</h3>
+    <p class="landing-feature-card__desc">内置分析面板实时追踪关键指标，让每次迭代都有据可依。</p>
+  </article>
+      </div>
+    </section>
+
+    
+    <section class="landing-section" id="pricing" data-section="pricing">
+      <div class="landing-section-head">
+        <div class="landing-kicker">Pricing</div>
+        <h2 class="landing-section-title">选择适合你的方案</h2>
+        <p class="landing-section-subtitle">不同阶段都能找到适合自己的入口。</p>
+      </div>
+      <div class="landing-pricing-grid">
+        <article class="landing-pricing-card">
+    
+    <div>
+      <h3 class="landing-pricing-card__title">基础版</h3>
+      <p class="landing-pricing-card__desc">满足核心需求，快速上手。</p>
+    </div>
+    <div class="landing-price">联系咨询</div>
+    <ul class="landing-pricing-list">
+      <li>核心功能</li><li>标准支持</li><li>基础报表</li>
+    </ul>
+    <a class="landing-button landing-button--secondary" href="#cta">了解详情</a>
+  </article><article class="landing-pricing-card landing-pricing-card--highlighted">
+    <div class="landing-pricing-card__badge">推荐</div>
+    <div>
+      <h3 class="landing-pricing-card__title">专业版</h3>
+      <p class="landing-pricing-card__desc">覆盖进阶场景，提升效率。</p>
+    </div>
+    <div class="landing-price">联系咨询</div>
+    <ul class="landing-pricing-list">
+      <li>全部功能</li><li>优先支持</li><li>高级分析</li>
+    </ul>
+    <a class="landing-button landing-button--primary" href="#cta">立即咨询</a>
+  </article><article class="landing-pricing-card">
+    
+    <div>
+      <h3 class="landing-pricing-card__title">企业版</h3>
+      <p class="landing-pricing-card__desc">定制化部署，专属服务。</p>
+    </div>
+    <div class="landing-price">联系咨询</div>
+    <ul class="landing-pricing-list">
+      <li>定制集成</li><li>专属顾问</li><li>私有部署</li>
+    </ul>
+    <a class="landing-button landing-button--secondary" href="#cta">联系咨询</a>
+  </article>
+      </div>
+    </section>
+
+    
+    <section class="landing-section" id="testimonials" data-section="testimonials">
+      <div class="landing-section-head">
+        <div class="landing-kicker">Testimonials</div>
+        <h2 class="landing-section-title">他们已经在用</h2>
+        <p class="landing-section-subtitle">来自不同团队的一线反馈。</p>
+      </div>
+      <div class="landing-testimonial-grid">
+        <article class="landing-testimonial-card">
+    <p class="landing-testimonial-card__quote">“接入 ClawDesign 后，团队更快对齐重点，上线节奏也更稳。”</p>
+    <h3 class="landing-testimonial-card__name">技术负责人</h3>
+    <div class="landing-testimonial-card__role">AI 行业</div>
+  </article><article class="landing-testimonial-card">
+    <p class="landing-testimonial-card__quote">“ClawDesign 让日常沟通和推进动作更集中，决策效率明显提高。”</p>
+    <h3 class="landing-testimonial-card__name">运营负责人</h3>
+    <div class="landing-testimonial-card__role">AI 行业</div>
+  </article><article class="landing-testimonial-card">
+    <p class="landing-testimonial-card__quote">“现在只看一页就能快速理解 ClawDesign 的核心价值和下一步动作。”</p>
+    <h3 class="landing-testimonial-card__name">业务负责人</h3>
+    <div class="landing-testimonial-card__role">AI 行业</div>
+  </article>
+      </div>
+    </section>
+
+    
+    <section class="landing-section" id="cta" data-section="cta">
+      <div class="landing-card landing-cta">
+        <div class="landing-kicker">Call To Action</div>
+        <h2 class="landing-section-title">了解 ClawDesign</h2>
+        <p class="landing-section-subtitle">ClawDesign 的核心亮点、适用场景和接入方式已经准备好。</p>
+        <div class="landing-actions">
+          <a class="landing-button landing-button--primary" href="#hero">体验ClawDesign</a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="landing-section" id="footer" data-section="footer">
+      <div class="landing-card landing-footer">
+        <div class="landing-footer-top">
+          <div>
+            <div class="landing-footer-brand">ClawDesign</div>
+            <p class="landing-footer-note">© 2026</p>
+          </div>
+          <div class="landing-footer-grid">
+            <section class="landing-footer-card">
+    <h3 class="landing-footer-card__title">页面导航</h3>
+    <ul class="landing-footer-links">
+      <li><a href="#hero">首屏</a></li><li><a href="#features">卖点</a></li><li><a href="#cta">CTA</a></li>
+    </ul>
+  </section><section class="landing-footer-card">
+    <h3 class="landing-footer-card__title">下一步</h3>
+    <ul class="landing-footer-links">
+      <li><a href="#cta">预约演示</a></li><li><a href="#pricing">获取方案</a></li>
+    </ul>
+  </section>
+          </div>
+        </div>
+        <div class="landing-footer-bottom">
+          <span>ClawDesign</span>
+          <span>© 2026</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>

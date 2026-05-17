@@ -1,0 +1,91 @@
+{
+  "name": "@self-evolving-harness/claw-design",
+  "version": "0.3.6",
+  "description": "AI 设计引擎 — 一句话生成演示文稿、图表、架构图等 12 类设计产物。3 层质量门禁，纯 HTML/CSS/SVG 输出，零图片生成依赖。",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./routing": {
+      "types": "./dist/routing/index.d.ts",
+      "import": "./dist/routing/index.js"
+    },
+    "./execution": {
+      "types": "./dist/execution/index.d.ts",
+      "import": "./dist/execution/index.js"
+    },
+    "./quality": {
+      "types": "./dist/quality/index.d.ts",
+      "import": "./dist/quality/index.js"
+    },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "import": "./dist/export/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter/index.d.ts",
+      "import": "./dist/adapter/index.js"
+    },
+    "./templates": {
+      "types": "./dist/templates/index.d.ts",
+      "import": "./dist/templates/index.js"
+    },
+    "./packaging": {
+      "types": "./dist/packaging/index.d.ts",
+      "import": "./dist/packaging/index.js"
+    },
+    "./output": {
+      "types": "./dist/output/index.d.ts",
+      "import": "./dist/output/index.js"
+    },
+    "./design-system": {
+      "types": "./dist/design-system/index.d.ts",
+      "import": "./dist/design-system/index.js"
+    }
+  },
+  "bin": {
+    "claw-design": "dist/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:typecheck": "tsc -p tsconfig.vitest.json --noEmit",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "author": "yuchangxu1989@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuchangxu1989-Openclaw/self-evolving-harness"
+  },
+  "keywords": [
+    "ai",
+    "design",
+    "ppt",
+    "chart",
+    "architecture-diagram",
+    "poster",
+    "claw-design"
+  ]
+}
