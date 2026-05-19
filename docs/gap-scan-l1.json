@@ -1,0 +1,18 @@
+{
+  "level": "l1",
+  "pass": false,
+  "timestamp": "2026-05-18T20:35:13.592Z",
+  "entries": [],
+  "compile": {
+    "command": "npx tsc --noEmit",
+    "passed": true,
+    "exitCode": 0,
+    "output": ""
+  },
+  "tests": {
+    "command": "npm test",
+    "passed": false,
+    "exitCode": 1,
+    "output": "\n> @self-evolving-harness/claw-design@0.3.6 test\n> vitest run\n\n\n RUN  v3.2.4 /root/.openclaw/workspace/projects/claw-design\n\n ✓ __tests__/cli.test.ts (5 tests) 13153ms\n   ✓ CLI entry point > prints help with --help  864ms\n   ✓ CLI entry point > prints version with --version  711ms\n   ✓ CLI entry point > exits with error when no prompt given  608ms\n   ✓ CLI generate (e2e) > generates HTML artifact from prompt  4228ms\n   ✓ CLI generate (e2e) > generates artifact with shorthand form (no generate command)  6735ms\n ✓ tests/unit/brand-packages.test.ts (6 tests) 937ms\n   ✓ FR-H05: Brand Package Ecosystem > BrandPackageRegistry.scan() finds 72+ packages  818ms\n ✓ __tests__/adapter.test.ts (22 tests) 116ms\n ✓ __tests__/packaging.test.ts (26 tests) 210ms\n ✓ tests/unit/fallback-content-quality.test.ts (10 tests) 90ms\n ✓ __tests__/md-to-ts-converter.test.ts (18 tests) 127ms\n ✓ tests/e2e/skill-smoke.test.ts (12 tests) 91ms\n ❯ tests/e2e/pipeline.test.ts (4 tests | 1 failed) 14128ms\n   ✓ E2E: createPipeline full flow > routes a slides request through the full pipeline and produces a bundle  4239ms\n   × E2E: createPipeline full flow > routes a chart request and produces output 5042ms\n     → Test timed out in 5000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n   ✓ E2E: createPipeline full flow > runs semantic cross validation only when explicitly enabled  4838ms\n   ✓ E2E: createPipeline full flow > throws ClarifyNeededError for ambiguous input without classifier 6ms\n ✓ tests/unit/prototype-skill.test.ts (9 tests) 75ms\n ✓ tests/unit/skill-execution.test.ts (7 tests) 53ms\n ✓ tests/unit/slop-blacklist.test.ts (61 tests) 127ms\n ✓ tests/unit/landing-skill.test.ts (6 tests) 64ms\n ✓ tests/unit/brand-kit-extractor.test.ts (5 tests) 45ms\n ✓ tests/unit/export-adapter.test.ts (13 tests) 23759ms\n   ✓ ExportAdapter > exports HTML, PPTX, PDF and extracted SVG files  2548ms\n   ✓ ExportAdapter > writes the original HTML to …"
+  }
+}
