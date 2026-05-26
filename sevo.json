@@ -1,8 +1,1 @@
-{
-  "projectName": "@self-evolving-harness/claw-design",
-  "specPath": "docs/product-requirements.md",
-  "sourceRoots": [
-    "src"
-  ],
-  "adapter": "openclaw"
-}
+{"managed": true}
