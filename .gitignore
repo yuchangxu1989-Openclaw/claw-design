@@ -17,6 +17,10 @@ state/
 .cache/
 coverage/
 dist/
+.next/
+web/.next/
+out/
+web/out/
 
 # 不该对外的内部文件
 .openclaw/
