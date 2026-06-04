@@ -1,6 +1,7 @@
 ---
 name: claw-design-charts
 description: "图表与数据可视化生成。画图表、chart、数据可视化、柱状图、饼图、折线图、漏斗图、桑基图、热力图、bar chart、line chart、pie chart。输入数据描述，输出 HTML 图表，支持 35+ 种图表类型。"
+designSystem: general
 ---
 
 # Claw Design — Charts Skill

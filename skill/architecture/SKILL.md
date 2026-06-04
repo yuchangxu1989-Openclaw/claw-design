@@ -1,6 +1,7 @@
 ---
 name: claw-design-architecture
 description: "架构图生成。架构图、系统图、部署图、组件图、拓扑图、技术架构、architecture diagram、system diagram、component diagram、deployment diagram。输入架构描述，输出 HTML/SVG 架构图，支持明暗双主题。"
+designSystem: general
 ---
 
 # Claw Design — Architecture Diagram Skill

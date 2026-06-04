@@ -29,6 +29,20 @@ npm install -g @self-evolving-harness/claw-design
 
 ## 命令行使用
 
+## DESIGN.md 资产库
+
+Skill 级引用语法使用 `SKILL.md` frontmatter：
+
+```yaml
+---
+name: claw-design-slides
+description: "..."
+designSystem: general
+---
+```
+
+运行时也支持在任务上下文中传 `designSystemId` / `designSystem` / `designAssetId` 覆盖该默认值。自定义资产格式为 `<asset-id>/DESIGN.md`，内容需包含设计系统名称、适用场景、色板、字体栈、字号层级、间距系统、组件描述、布局约束、参考样例和禁用规则。
+
 生成设计产物需要文本 LLM。OpenClaw 会在已配置文本 LLM 时注入 LLM；裸 npm CLI 不内置 LLM，如果没有在程序内通过 `createPipeline(theme, { classifierProvider })` 注入 classifier，`generate` 会给出引导性报错，不会用关键词规则猜测意图。
 
 ```bash

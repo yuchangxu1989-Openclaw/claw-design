@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { createPipeline, ClarifyNeededError } from '../index.js';
 import { SlopConfigManager } from '../quality/slop-config.js';
+import { PluginManager } from '../plugins/index.js';
 
 const __dirname = resolve(fileURLToPath(import.meta.url), '..');
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../../package.json'), 'utf-8'));
@@ -17,10 +18,21 @@ claw-design — AI 设计引擎 CLI
 用法:
   claw-design generate <prompt> [options]
   claw-design <prompt> [options]
+  claw-design plugin <list|install|uninstall|enable|disable|discover> [target]
   claw-design slop-list
 
 命令:
   generate <prompt>   根据自然语言描述生成设计制品（HTML/PPTX）
+  plugin list         列出已安装插件
+  plugin install <dir|registry:name>
+                      安装本地插件或已发现的 registry 插件
+  plugin uninstall <name>
+                      卸载插件
+  plugin enable <name>
+                      启用插件
+  plugin disable <name>
+                      停用插件
+  plugin discover     发现本地目录和已配置 registry 中的插件
   slop-list           查看 Slop 黑名单规则状态
 
 选项:
@@ -32,6 +44,8 @@ claw-design — AI 设计引擎 CLI
   claw-design generate "帮我做一个关于AI趋势的演示文稿"
   claw-design "季度汇报 PPT" -o ./my-output
   claw-design generate "system architecture diagram for microservices"
+  claw-design plugin install ./plugins/icon-pack
+  claw-design plugin list
   claw-design slop-list
 
 支持的制品类型:
@@ -44,6 +58,66 @@ claw-design — AI 设计引擎 CLI
   未注入 LLM 时不会降级到关键词匹配，而是提示去 OpenClaw 或注入 classifier。
 `.trim();
   console.log(help);
+}
+
+async function runPluginCommand(args: string[]): Promise<void> {
+  const action = args[1] ?? 'list';
+  const target = args[2];
+  const manager = new PluginManager();
+
+  if (action === 'list') {
+    const installed = await manager.list();
+    if (installed.length === 0) {
+      console.log('No plugins installed.');
+      return;
+    }
+    console.log(`${'NAME'.padEnd(24)} ${'TYPE'.padEnd(10)} ${'VERSION'.padEnd(10)} ${'STATUS'.padEnd(10)} ${'SOURCE'.padEnd(10)} CAPABILITIES`);
+    for (const plugin of installed) {
+      console.log(
+        `${plugin.name.padEnd(24)} ${plugin.type.padEnd(10)} ${plugin.version.padEnd(10)} ${plugin.status.padEnd(10)} ${plugin.sourceKind.padEnd(10)} ${plugin.capabilities.join('; ')}`
+      );
+    }
+    return;
+  }
+
+  if (action === 'discover') {
+    const discovered = await manager.discover();
+    console.log(`Discovered plugins: ${discovered.total}`);
+    for (const listing of discovered.listings) {
+      console.log(`${listing.manifest.name} ${listing.manifest.version} ${listing.manifest.type} ${listing.source.kind} ${listing.manifest.quality.maturity}`);
+    }
+    return;
+  }
+
+  if (!target) {
+    throw new Error(`plugin ${action} requires a target`);
+  }
+
+  if (action === 'install') {
+    const installed = await manager.install(target);
+    console.log(`Installed plugin: ${installed.manifest.name} ${installed.manifest.version} (${installed.manifest.type})`);
+    return;
+  }
+
+  if (action === 'uninstall') {
+    const removed = await manager.uninstall(target);
+    console.log(removed ? `Uninstalled plugin: ${target}` : `Plugin not installed: ${target}`);
+    return;
+  }
+
+  if (action === 'enable') {
+    const changed = await manager.enable(target);
+    console.log(changed ? `Enabled plugin: ${target}` : `Plugin not installed: ${target}`);
+    return;
+  }
+
+  if (action === 'disable') {
+    const changed = await manager.disable(target);
+    console.log(changed ? `Disabled plugin: ${target}` : `Plugin not installed: ${target}`);
+    return;
+  }
+
+  throw new Error(`Unknown plugin command: ${action}`);
 }
 
 function runSlopList(): void {
@@ -84,6 +158,17 @@ async function main(): Promise<void> {
   if (args[0] === 'slop-list') {
     runSlopList();
     process.exit(0);
+  }
+
+  if (args[0] === 'plugin') {
+    try {
+      await runPluginCommand(args);
+      process.exit(0);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error(`错误: ${message}`);
+      process.exit(1);
+    }
   }
 
   let prompt: string | undefined;

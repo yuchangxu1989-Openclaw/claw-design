@@ -2,6 +2,7 @@ import { mkdtemp, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
+import { DesignAssetLibrary } from '../../src/design-system/design-assets.js';
 import { SkillExecutor, buildArtifact, DEFAULT_THEME } from '../../src/execution/skill-executor.js';
 import { discoverSkillsFromDir } from '../../src/execution/skill-registry.js';
 import { IntentRouter } from '../../src/routing/intent-router.js';
@@ -52,8 +53,106 @@ describe('Skill executor and registry', () => {
 
     expect(artifact.taskId).toBe('task-skill');
     expect(artifact.metadata).toEqual({
-      context: { locale: 'zh-CN', taskId: 'task-skill' },
+      context: expect.objectContaining({
+        locale: 'zh-CN',
+        taskId: 'task-skill',
+        designSystemId: 'general',
+        designSystemName: 'General Purpose Design System',
+        designMdContext: expect.stringContaining('DESIGN.md Asset Context'),
+      }),
+      designSystem: expect.objectContaining({
+        id: 'general',
+        promptContext: expect.stringContaining('General Purpose Design System'),
+      }),
+      designSystemQualityReport: expect.objectContaining({
+        taskId: 'task-skill',
+      }),
     });
+  });
+
+  it('injects custom DESIGN.md context into the skill prompt context and theme', async () => {
+    const dir = await mkdtemp(join(tmpdir(), 'claw-design-assets-'));
+    const library = new DesignAssetLibrary({ userAssetsDir: dir });
+    await library.create('custom', `# Custom System
+
+## Design System Name
+Custom System
+
+## Applicable Scenarios
+- General generated artifacts.
+
+## Brand Colors / Palette
+- Canvas: #ffffff
+- Surface: #f8fafc
+- Primary: #0ea5e9
+- Accent: #22c55e
+- Text: #111827
+
+## Font Stack
+- Heading: Inter, ui-sans-serif, system-ui, sans-serif
+- Body: Inter, ui-sans-serif, system-ui, sans-serif
+
+## Type Scale
+- Body: 16px / 24px
+- Page title: 40px / 48px
+
+## Spacing System
+- Base unit: 8px
+- Standard gap: 16px
+- Radius medium: 8px
+
+## Component Library Path or Component Description
+- Use .cd-card components.
+
+## Layout Constraints
+- Use an 8px spacing rhythm.
+
+## Reference Examples
+- A clean blue and green page.
+
+## Forbidden Rules
+- Do not use colors outside the palette.
+`);
+
+    const skill: DesignSkill = {
+      contract: {
+        name: 'slides-skill',
+        artifactType: 'slides',
+        description: 'slides',
+        triggerKeywords: ['slides'],
+      },
+      async generate(_input, theme, context): Promise<Artifact> {
+        return {
+          taskId: String(context.taskId),
+          type: 'slides',
+          status: 'ready',
+          html: `<html><body style="color:${theme.colorPrimary}">${context.designMdContext}</body></html>`,
+          pages: 1,
+          metadata: { context, theme },
+        };
+      },
+    };
+    const router = new IntentRouter();
+    router.register(skill);
+    const executor = new SkillExecutor(router, library);
+
+    const artifact = await executor.execute(
+      makeIntent({ context: { designSystemId: 'custom' } }),
+      'Build this',
+      DEFAULT_THEME,
+    );
+
+    expect(artifact.metadata.context).toEqual(expect.objectContaining({
+      designSystemId: 'custom',
+      designMdContext: expect.stringContaining('Custom System'),
+    }));
+    expect(artifact.metadata.theme).toEqual(expect.objectContaining({
+      colorPrimary: '#0ea5e9',
+      baselineLabel: 'Custom System',
+    }));
+    expect(artifact.metadata.designSystemQualityReport).toEqual(expect.objectContaining({
+      conclusion: 'pass',
+    }));
   });
 
   it('throws when no matched skill is present on the intent packet', async () => {

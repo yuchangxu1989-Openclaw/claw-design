@@ -25,6 +25,14 @@ export type {
   BatchConversionReport,
 } from './package-types.js';
 
+export type {
+  DesignAsset,
+  DesignAssetResolution,
+  DesignAssetTokens,
+  DesignAssetValidationResult,
+  DesignAssetLibraryOptions,
+} from './design-assets.js';
+
 export { DesignSystemRegistry } from './registry.js';
 export { HardcodedValueDetector } from './constraint-checker.js';
 export { ConstraintInjector, MAX_RETRY_ATTEMPTS } from './constraint-injector.js';
@@ -43,3 +51,4 @@ export { BrandPackageRegistry } from './brand-registry.js';
 export { BrandInjector } from './injector.js';
 export { PackageValidator } from './package-validator.js';
 export { ActivePackageManager } from './active-package.js';
+export { DesignAssetLibrary, DEFAULT_DESIGN_SYSTEM_ID } from './design-assets.js';

@@ -153,6 +153,8 @@ npm install -g @self-evolving-harness/claw-design
 ```bash
 claw-design generate "<一句话需求>"   # 生成设计制品（HTML/PPTX 到输出目录）
 claw-design "<一句话需求>" -o ./out    # generate 可省略，-o 指定输出目录
+claw-design plugin list               # 列出已安装插件
+claw-design plugin install ./plugins/x # 安装本地插件
 claw-design slop-list                  # 查看 Slop 黑名单规则状态
 claw-design --help                     # 查看帮助
 claw-design --version                  # 查看版本
@@ -210,6 +212,7 @@ xdg-open ./output/index.html  # Linux
 - [命令行使用](#命令行使用cli)
 - [配置参考](#前提)
 - [故障排查](#故障排查)
+- [插件协议](docs/plugin-protocol.md)
 - [产品规格](docs/product-requirements.md)
 - [架构说明](docs/architecture/arc42-architecture.md)
 

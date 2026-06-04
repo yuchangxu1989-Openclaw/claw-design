@@ -3,6 +3,7 @@
 
 import type { IntentPacket, ThemePack, Artifact, DesignSkill } from '../types.js';
 import { IntentRouter } from '../routing/intent-router.js';
+import { DesignAssetLibrary } from '../design-system/design-assets.js';
 
 const DEFAULT_PRIMARY_COLOR = '#1a73e8'; // Google Blue — neutral default for slides/charts
 
@@ -25,7 +26,10 @@ export const DEFAULT_THEME: ThemePack = {
 };
 
 export class SkillExecutor {
-  constructor(private router: IntentRouter) {}
+  constructor(
+    private router: IntentRouter,
+    private designAssets: DesignAssetLibrary = new DesignAssetLibrary(),
+  ) {}
 
   async execute(
     intent: IntentPacket,
@@ -41,9 +45,50 @@ export class SkillExecutor {
       throw new Error(`Skill "${intent.matchedSkill}" not found in registry`);
     }
 
-    // Ensure taskId is propagated into context so skills can access it
-    const contextWithTaskId = { ...intent.context, taskId: intent.taskId };
-    const artifact = await skill.generate(rawInput, theme, contextWithTaskId);
+    const designAsset = await this.designAssets.resolveForSkill(intent.matchedSkill, intent.context);
+    const effectiveTheme = this.designAssets.toThemePack(designAsset.asset, theme);
+
+    // Ensure taskId and DESIGN.md context are propagated so skills can use them
+    // as prompt constraints, quality rules, and delivery notes.
+    const contextWithTaskId = {
+      ...intent.context,
+      taskId: intent.taskId,
+      designSystemId: designAsset.asset.id,
+      designSystemName: designAsset.asset.name,
+      designMdContext: designAsset.promptContext,
+      designGenerationConstraints: designAsset.generationConstraints,
+      designDeliveryNotes: designAsset.deliveryNotes,
+      qualityRules: [
+        ...designAsset.qualityRules.map(rule => ({ id: rule.rule, severity: rule.severity, description: rule.message })),
+        ...((intent.context.qualityRules as unknown[]) ?? []),
+      ],
+    };
+    const artifact = await skill.generate(rawInput, effectiveTheme, contextWithTaskId);
+    const designQualityItems = [
+      ...designAsset.qualityRules,
+      ...this.designAssets.checkHtml(artifact.html ?? '', designAsset.asset, intent.taskId),
+    ];
+    artifact.metadata = {
+      ...artifact.metadata,
+      designSystem: {
+        id: designAsset.asset.id,
+        name: designAsset.asset.name,
+        source: designAsset.asset.source,
+        promptContext: designAsset.promptContext,
+        generationConstraints: designAsset.generationConstraints,
+        deliveryNotes: designAsset.deliveryNotes,
+      },
+      designSystemQualityReport: {
+        taskId: intent.taskId,
+        conclusion: designQualityItems.some(item => !item.passed && item.severity === 'block')
+          ? 'block'
+          : designQualityItems.some(item => !item.passed && item.severity === 'warn')
+            ? 'warn'
+            : 'pass',
+        items: designQualityItems,
+        checkedAt: new Date().toISOString(),
+      },
+    };
     return artifact;
   }
 }

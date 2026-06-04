@@ -1,6 +1,7 @@
 ---
 name: claw-design-infographic
 description: "信息图生成。做信息图、infographic、数据图解、图文报告、visual summary、data story、统计图解、信息可视化、information graphic。输入数据或主题描述，输出 HTML/SVG 信息图。"
+designSystem: general
 ---
 
 # Claw Design — Infographic Skill

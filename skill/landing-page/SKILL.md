@@ -1,6 +1,7 @@
 ---
 name: claw-design-landing-page
 description: "Landing Page 落地页生成。做落地页、landing page、单页网站、产品页、营销页、one-pager、product page、marketing page、campaign page。输入产品/活动描述，输出响应式 HTML 落地页。"
+designSystem: general
 ---
 
 # Claw Design — Landing Page Skill

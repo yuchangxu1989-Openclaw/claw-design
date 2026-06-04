@@ -95,6 +95,31 @@ export type {
 } from './packaging/index.js';
 export { HtmlFormatter, SvgFormatter, FormatRegistry } from './output/index.js';
 export type { OutputFormatter, OutputFormat, FormatOptions } from './output/index.js';
+export {
+  PluginManager,
+  PluginRegistryClient,
+  PluginStateStore,
+  getDefaultPluginStatePath,
+  getPluginManifestFilename,
+  loadEnabledPluginContributions,
+  parsePluginManifest,
+} from './plugins/index.js';
+export type {
+  PluginType,
+  PluginManifest,
+  PluginCapability,
+  PluginQualityLevel,
+  PluginStatus,
+  PluginSource,
+  PluginSourceKind,
+  PluginListing,
+  PluginListItem,
+  PluginDiscoveryResult,
+  PluginContribution,
+  PluginContributions,
+  RegistryIndex,
+  RegistryIndexEntry,
+} from './plugins/index.js';
 export { MultiIntentRouter } from './routing/index.js';
 export type { IntentSegment, MultiIntentResult, RouteExplanation } from './routing/index.js';
 export { ProductionOrchestrator } from './routing/index.js';
@@ -124,12 +149,15 @@ export type {
 export {
   DesignSystemRegistry, HardcodedValueDetector, ConstraintInjector,
   VisualVerifier, DARK_SCI_FI_PACKAGE, MAX_RETRY_ATTEMPTS,
+  DesignAssetLibrary, DEFAULT_DESIGN_SYSTEM_ID,
 } from './design-system/index.js';
 export type {
   DesignSystemPackage, DesignTokens, DesignSpacingScale, TypographyScale,
   ComponentClass, ReferencePage, DesignConstraints, ConstraintRule,
   ConstraintViolation, PromptConstraintBlock, VisualVerificationResult,
   GenerationAttempt, ScreenshotProvider, ImageComparator, VisualVerifierOptions,
+  DesignAsset, DesignAssetResolution, DesignAssetTokens, DesignAssetValidationResult,
+  DesignAssetLibraryOptions,
 } from './design-system/index.js';
 
 import { IntentRouter } from './routing/index.js';
@@ -138,6 +166,7 @@ import type { IntentClassifierProvider } from './routing/index.js';
 import { ClarifyNeededError } from './routing/index.js';
 import { SkillRegistry } from './skills/skill-registry.js';
 import { SkillExecutor, DEFAULT_THEME } from './execution/index.js';
+import { DesignAssetLibrary } from './design-system/index.js';
 import { QualityGateL1 } from './quality/index.js';
 import { QualityGateL2Impl } from './quality/index.js';
 import { QualityGateL3Impl } from './quality/index.js';
@@ -146,6 +175,8 @@ import { ExportAdapter } from './export/index.js';
 import { OpenClawAdapter } from './adapter/index.js';
 import type { ThemePack, DeliveryBundle, QualityReport, QualityConclusion, DesignSkill } from './types.js';
 import type { SemanticValidator } from './quality/index.js';
+import { PluginManager, loadEnabledPluginContributions } from './plugins/index.js';
+import type { PluginContributions } from './plugins/index.js';
 
 export interface PipelineResult {
   bundle: DeliveryBundle | null;
@@ -159,6 +190,10 @@ export interface CreatePipelineOptions {
   classifierProvider?: IntentClassifierProvider;
   /** Additional skills to register beyond auto-discovered built-ins */
   additionalSkills?: DesignSkill[];
+  /** Optional plugin manager. Defaults to user-level Claw Design plugin state. */
+  pluginManager?: PluginManager;
+  /** DESIGN.md asset library. Defaults to built-in general design system. */
+  designAssets?: DesignAssetLibrary;
 }
 
 /**
@@ -188,13 +223,16 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
     skills: registry.list(),
   });
 
-  const executor = new SkillExecutor(router);
+  const designAssets = options.designAssets ?? new DesignAssetLibrary();
+  const executor = new SkillExecutor(router, designAssets);
   const qualityGate = new QualityGateL1();
   const qualityGateL2 = new QualityGateL2Impl();
   const qualityGateL3 = new QualityGateL3Impl(options.semanticValidator);
   const slopChecker = new SlopChecker();
   const exporter = new ExportAdapter();
   const adapter = new OpenClawAdapter();
+  const pluginManager = options.pluginManager ?? new PluginManager();
+  const pluginContributions = await loadEnabledPluginContributions(pluginManager);
 
   const activeTheme = theme ?? DEFAULT_THEME;
 
@@ -225,19 +263,35 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
         const filled = await adapter.clarify(intent.gaps);
         Object.assign(intent.context, filled);
       }
+      intent.context = {
+        ...intent.context,
+        pluginContributions,
+        pluginAssetCandidates: pluginContributions.assetCandidates,
+      };
 
       // 4. Execute skill
-      const artifact = await executor.execute(intent, request.rawInput, activeTheme);
+      const artifact = await executor.execute(intent, request.rawInput, {
+        ...activeTheme,
+        pluginContributions,
+      } as ThemePack & { pluginContributions: PluginContributions });
+      const designReport = artifact.metadata['designSystemQualityReport'] as QualityReport | undefined;
+      const appliedTheme = artifact.metadata['theme'] as ThemePack | undefined;
       artifact.metadata['qualityContext'] = {
         requestInput: request.rawInput,
-        theme: activeTheme,
+        theme: appliedTheme ?? activeTheme,
         semanticValidation: request.metadata?.['semanticValidation'],
         allowStyleExceptions: request.metadata?.['allowStyleExceptions'],
+        pluginValidationCandidates: pluginContributions.qualityGateCandidates,
       };
+      artifact.metadata['pluginContributions'] = pluginContributions;
+      artifact.metadata['pluginExportCandidates'] = pluginContributions.exportAdapterCandidates;
 
       // 5. Quality check — L1 (sync) then L2/L3 (async) if L1 passes
       const l1Report = qualityGate.check(artifact);
-      let quality: QualityReport = l1Report;
+      let quality: QualityReport = {
+        ...l1Report,
+        items: [...l1Report.items, ...(designReport?.items ?? [])],
+      };
 
       if (l1Report.conclusion !== 'block') {
         const l2Report = await qualityGateL2.check(artifact);
@@ -245,7 +299,7 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
           requestInput: request.rawInput,
           semanticValidation: request.metadata?.['semanticValidation'] as { enabled?: boolean; userAcknowledgedCost?: boolean } | undefined,
         });
-        const mergedItems = [...l1Report.items, ...l2Report.items, ...l3Report.items];
+        const mergedItems = [...quality.items, ...l2Report.items, ...l3Report.items];
         const hasBlock = mergedItems.some(i => !i.passed && i.severity === 'block');
         const hasWarn = mergedItems.some(i => !i.passed && i.severity === 'warn');
         let conclusion: QualityConclusion = 'pass';

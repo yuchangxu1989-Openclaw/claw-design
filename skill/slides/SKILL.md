@@ -1,6 +1,7 @@
 ---
 name: claw-design-slides
 description: "演示文稿生成。做PPT、演示文稿、slides、deck、presentation、幻灯片、pitch deck、分享稿、演讲稿，也接收 convert to pptx、export pptx、导出PPT、转换为PPT、生成PPT文件、pptx格式 等导出触发词。输入一句话描述，输出多页 HTML 幻灯片；当前 PPTX 导出意图先路由到 slides，anthropic-pptx 接入待补。"
+designSystem: general
 ---
 
 # Claw Design — Slides Skill
