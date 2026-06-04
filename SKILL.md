@@ -13,14 +13,43 @@ description: |
 
 ## 安装
 
+OpenClaw 用户推荐通过 `clawhub` 安装。`clawhub` 是 OpenClaw 环境提供的插件安装入口；如果你没有 OpenClaw，请走下面的 npm 路径。
+
 ```bash
 clawhub install claw-design
 ```
 
-或通过 npm：
+裸 npm 用户可以全局安装 CLI：
 
 ```bash
-npm install @self-evolving-harness/claw-design
+npm install -g @self-evolving-harness/claw-design
+```
+
+也可以在项目内安装后用 `npx claw-design` 调用。
+
+## 命令行使用
+
+生成设计产物需要文本 LLM。OpenClaw 会在已配置文本 LLM 时注入 LLM；裸 npm CLI 不内置 LLM，如果没有在程序内通过 `createPipeline(theme, { classifierProvider })` 注入 classifier，`generate` 会给出引导性报错，不会用关键词规则猜测意图。
+
+```bash
+claw-design generate "帮我做一个关于 AI 趋势的演示文稿" -o ./output
+```
+
+生成成功后查看产物：
+
+```bash
+open ./output/index.html      # macOS
+xdg-open ./output/index.html  # Linux
+```
+
+主交付 HTML 在浏览器里预览，PPTX 可在 PowerPoint/Keynote 里继续编辑。终端会打印实际产物路径和质量门禁结论。
+
+不依赖 LLM 的命令：
+
+```bash
+claw-design slop-list
+claw-design --help
+claw-design --version
 ```
 
 ## 核心能力
