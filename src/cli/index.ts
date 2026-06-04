@@ -3,10 +3,8 @@
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { createPipeline } from '../index.js';
+import { createPipeline, ClarifyNeededError } from '../index.js';
 import { SlopConfigManager } from '../quality/slop-config.js';
-import type { IntentClassifierProvider, ClassificationResult, SkillDescription } from '../routing/intent-classifier.js';
-import type { ArtifactType } from '../types.js';
 
 const __dirname = resolve(fileURLToPath(import.meta.url), '..');
 const pkg = JSON.parse(readFileSync(resolve(__dirname, '../../package.json'), 'utf-8'));
@@ -40,7 +38,10 @@ claw-design — AI 设计引擎 CLI
   slides, chart, arch-diagram, flowchart, poster, landing-page,
   prototype, ui-mockup, dashboard, infographic, logic-diagram, video
 
-无 LLM 时返回 unknown（不降级到关键词匹配），仍可产出完整 HTML 制品。
+说明:
+  意图识别由文本 LLM 完成。standalone CLI 不内置 LLM，
+  需由宿主环境（如 OpenClaw）注入文本 LLM classifier 后才能识别意图。
+  未注入 LLM 时不会降级到关键词匹配，而是提示去 OpenClaw 或注入 classifier。
 `.trim();
   console.log(help);
 }
@@ -63,88 +64,6 @@ function runSlopList(): void {
     console.log(
       `${rule.id.padEnd(24)} ${rule.name.padEnd(30)} ${rule.severity.padEnd(10)} ${enabled}`
     );
-  }
-}
-
-/**
- * CLI-level keyword classifier for standalone usage without an LLM.
- * This is NOT intent routing fallback — it's the CLI explicitly choosing
- * a best-effort classifier when no LLM host is available.
- */
-class CliKeywordClassifier implements IntentClassifierProvider {
-  async classify(input: string, skillDescriptions: SkillDescription[]): Promise<ClassificationResult> {
-    const inputLower = input.toLowerCase();
-    let bestMatch: SkillDescription | null = null;
-    let bestScore = 0;
-
-    for (const skill of skillDescriptions) {
-      let score = 0;
-      // Check artifact type name
-      if (inputLower.includes(skill.artifactType)) score += 3;
-      // Check skill name
-      if (inputLower.includes(skill.name)) score += 3;
-      // Check capabilities
-      if (skill.capabilities) {
-        for (const cap of skill.capabilities) {
-          if (inputLower.includes(cap.toLowerCase())) score += 1;
-        }
-      }
-      // Check applicable scenes
-      if (skill.applicableScenes) {
-        for (const scene of skill.applicableScenes) {
-          if (inputLower.includes(scene.toLowerCase())) score += 2;
-        }
-      }
-      // Check example prompts
-      if (skill.examplePrompts) {
-        for (const ex of skill.examplePrompts) {
-          if (inputLower.includes(ex.toLowerCase().slice(0, 6))) score += 2;
-        }
-      }
-      if (score > bestScore) {
-        bestScore = score;
-        bestMatch = skill;
-      }
-    }
-
-    // Common Chinese/English term heuristics
-    if (!bestMatch || bestScore < 2) {
-      const typeMap: Array<[string[], string]> = [
-        [['演示文稿', 'ppt', 'slides', 'deck', '汇报'], 'slides'],
-        [['图表', '柱状图', '饼图', 'chart', '折线图'], 'chart'],
-        [['架构图', 'architecture', '系统架构'], 'arch-diagram'],
-        [['流程图', 'flowchart', 'flow'], 'flowchart'],
-        [['海报', 'poster'], 'poster'],
-        [['落地页', 'landing'], 'landing-page'],
-        [['原型', 'prototype', 'mockup'], 'prototype'],
-        [['仪表盘', 'dashboard'], 'dashboard'],
-        [['信息图', 'infographic'], 'infographic'],
-        [['逻辑图', 'logic'], 'logic-diagram'],
-      ];
-      for (const [keywords, type] of typeMap) {
-        for (const kw of keywords) {
-          if (inputLower.includes(kw)) {
-            bestMatch = skillDescriptions.find(s => s.artifactType === type) ?? null;
-            bestScore = 4;
-            break;
-          }
-        }
-        if (bestMatch && bestScore >= 4) break;
-      }
-    }
-
-    // Default to slides if nothing matched
-    if (!bestMatch || bestScore < 2) {
-      bestMatch = skillDescriptions.find(s => s.artifactType === 'slides') ?? skillDescriptions[0] ?? null;
-      bestScore = 2;
-    }
-
-    return {
-      primaryType: (bestMatch?.artifactType ?? 'slides') as ArtifactType,
-      secondaryTypes: [],
-      confidence: Math.min(bestScore / 8, 0.9),
-      reasoning: `CLI standalone classifier: matched "${bestMatch?.name ?? 'slides'}"`,
-    };
   }
 }
 
@@ -192,10 +111,11 @@ async function main(): Promise<void> {
   console.log(`输出目录: ${resolvedOutput}`);
 
   try {
-    // CLI standalone mode: use keyword-based classifier as best-effort
-    // (host environments like OpenClaw inject a real LLM classifier)
-    const cliClassifier = new CliKeywordClassifier();
-    const pipeline = await createPipeline(undefined, { classifierProvider: cliClassifier });
+    // standalone CLI: no LLM classifier is injected here. Intent routing is
+    // LLM-only by design (PRD AC-08) — there is no keyword fallback. When no
+    // host LLM is available, the pipeline cannot determine intent and raises
+    // ClarifyNeededError, which we surface as a guiding message below.
+    const pipeline = await createPipeline();
     const result = await pipeline.run(prompt, resolvedOutput);
 
     if (result.bundle) {
@@ -212,6 +132,13 @@ async function main(): Promise<void> {
       process.exit(1);
     }
   } catch (err) {
+    if (err instanceof ClarifyNeededError) {
+      console.error('\n无法识别设计意图：当前没有可用的文本 LLM。');
+      console.error('Claw Design 的意图识别只走 LLM 语义理解，不降级到关键词匹配。');
+      console.error('请在已配置文本 LLM 的 OpenClaw 中使用，或在程序内通过');
+      console.error('createPipeline(theme, { classifierProvider }) 注入文本 LLM classifier。');
+      process.exit(1);
+    }
     const message = err instanceof Error ? err.message : String(err);
     console.error(`\n错误: ${message}`);
     process.exit(1);

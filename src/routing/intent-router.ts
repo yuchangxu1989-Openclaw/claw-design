@@ -2,7 +2,7 @@
  * IntentRouter — LLM-based intent routing.
  *
  * Intent routing uses LLM semantic reasoning exclusively via injected IntentClassifierProvider.
- * No keyword fallback — if no LLM classifier is provided, routing returns unknown.
+ * If no LLM provider is injected, routing returns unknown instead of guessing.
  *
  * AC-08: Intent routing must be based on LLM semantic classification.
  */
@@ -50,7 +50,7 @@ export class IntentRouter {
    */
   async route(request: DesignRequest): Promise<IntentPacket> {
     if (!this.classifier) {
-      // No LLM classifier available — return unknown (no keyword fallback)
+      // No LLM provider available: return unknown instead of guessing.
       return {
         taskId: request.taskId,
         primaryType: 'slides',
@@ -76,7 +76,7 @@ export class IntentRouter {
         timeout,
       ]);
     } catch (err) {
-      // LLM call failed or timed out — return error, no keyword fallback
+      // LLM call failed or timed out: return an explicit routing error.
       return {
         taskId: request.taskId,
         primaryType: 'slides',
