@@ -2,6 +2,7 @@
 name: claw-design-flowchart
 description: "流程图与时序图生成。画流程图、时序图、sequence diagram、flowchart、flow chart、活动图、泳道图、swimlane、process flow、业务流程、工作流图。输入流程描述，输出 HTML/SVG 流程图或时序图。"
 designSystem: general
+aestheticPrincipleAdditions: diagram-flow-clarity
 ---
 
 # Claw Design — Flowchart Skill

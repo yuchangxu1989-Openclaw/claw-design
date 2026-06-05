@@ -3,6 +3,7 @@ import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { QualityItem, ThemePack } from '../types.js';
+import type { ReferenceDesignSystemContext } from './reference-style.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const DEFAULT_ASSETS_DIR = resolve(__dirname, 'assets');
@@ -74,7 +75,7 @@ export interface DesignAsset {
   id: string;
   name: string;
   content: string;
-  source: 'built-in' | 'custom';
+  source: 'built-in' | 'custom' | 'runtime';
   path?: string;
   tokens: DesignAssetTokens;
 }
@@ -123,7 +124,8 @@ export class DesignAssetLibrary {
   }
 
   async list(): Promise<DesignAsset[]> {
-    const builtIns = [await this.loadBuiltIn(DEFAULT_DESIGN_SYSTEM_ID)];
+    const builtInIds = await this.listBuiltInIds();
+    const builtIns = await Promise.all(builtInIds.map(id => this.loadBuiltIn(id)));
     const custom = this.userAssetsDir ? await this.loadCustomAssets() : [];
     const seen = new Set<string>();
     return [...custom, ...builtIns].filter(asset => {
@@ -140,7 +142,31 @@ export class DesignAssetLibrary {
       if (custom) return custom;
     }
     if (id === DEFAULT_DESIGN_SYSTEM_ID) return this.loadBuiltIn(id);
+    if (await this.builtInExists(id)) return this.loadBuiltIn(id);
     return null;
+  }
+
+  /**
+   * Discover built-in asset ids from the assets directory. The default system
+   * is always present (it has a hardcoded fallback even if the file is absent);
+   * additional built-in presets are picked up from their <id>/DESIGN.md folders.
+   */
+  private async listBuiltInIds(): Promise<string[]> {
+    const ids = new Set<string>([DEFAULT_DESIGN_SYSTEM_ID]);
+    const entries = await readdir(this.builtInAssetsDir, { withFileTypes: true }).catch(() => []);
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (!this.isSafeAssetId(entry.name)) continue;
+      if (await this.builtInExists(entry.name)) ids.add(entry.name);
+    }
+    return [...ids];
+  }
+
+  private async builtInExists(id: string): Promise<boolean> {
+    if (!this.isSafeAssetId(id)) return false;
+    const path = join(this.builtInAssetsDir, id, 'DESIGN.md');
+    const content = await readFile(path, 'utf-8').catch(() => null);
+    return Boolean(content && this.validate(content).valid);
   }
 
   async create(id: string, content: string): Promise<DesignAsset> {
@@ -185,6 +211,11 @@ export class DesignAssetLibrary {
       asset = await this.loadBuiltIn(DEFAULT_DESIGN_SYSTEM_ID);
     }
 
+    const referenceOverlay = this.getReferenceStyleDesignMd(context);
+    if (referenceOverlay) {
+      asset = this.mergeReferenceOverlay(asset, referenceOverlay);
+    }
+
     return {
       asset,
       promptContext: this.toPromptContext(asset),
@@ -192,6 +223,18 @@ export class DesignAssetLibrary {
       qualityRules: this.toQualityRules(asset, gapMessage),
       deliveryNotes: this.toDeliveryNotes(asset, gapMessage),
       gapMessage,
+    };
+  }
+
+  toReferenceDesignSystemContext(asset: DesignAsset): ReferenceDesignSystemContext {
+    return {
+      id: asset.id,
+      name: asset.name,
+      source: asset.source,
+      content: asset.content,
+      tokens: asset.tokens,
+      generationConstraints: this.toGenerationConstraints(asset),
+      deliveryNotes: this.toDeliveryNotes(asset),
     };
   }
 
@@ -300,6 +343,32 @@ export class DesignAssetLibrary {
 
   private isSafeAssetId(id: string): boolean {
     return /^[a-z0-9][a-z0-9._-]*$/i.test(id) && !id.includes('..') && !id.includes('/') && !id.includes('\\') && !isAbsolute(id);
+  }
+
+  private mergeReferenceOverlay(base: DesignAsset, referenceOverlay: string): DesignAsset {
+    const overlayTokens = this.extractTokens(referenceOverlay);
+    const overlayColors = overlayTokens.colors.length > 0 ? overlayTokens.colors : base.tokens.colors;
+    return {
+      ...base,
+      id: `${base.id}-reference-overlay`,
+      name: `${base.name} + Reference Image Style Overlay`,
+      content: [
+        referenceOverlay,
+        '',
+        '---',
+        '',
+        '# Base DESIGN.md Context',
+        '',
+        base.content,
+      ].join('\n'),
+      source: 'runtime',
+      tokens: {
+        ...base.tokens,
+        colors: overlayColors,
+        layoutConstraints: [...overlayTokens.layoutConstraints, ...base.tokens.layoutConstraints],
+        forbiddenRules: [...overlayTokens.forbiddenRules, ...base.tokens.forbiddenRules],
+      },
+    };
   }
 
   private resolveUserAssetPath(id: string): string {
@@ -512,6 +581,11 @@ export class DesignAssetLibrary {
 
   private getRequestedDesignSystem(context: Record<string, unknown>): string | null {
     const value = context.designSystemId ?? context.designSystem ?? context.designAssetId;
+    return typeof value === 'string' && value.trim() ? value.trim() : null;
+  }
+
+  private getReferenceStyleDesignMd(context: Record<string, unknown>): string | null {
+    const value = context.referenceStyleDesignMd;
     return typeof value === 'string' && value.trim() ? value.trim() : null;
   }
 

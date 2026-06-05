@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { describe, expect, it } from 'vitest';
 import { DesignAssetLibrary } from '../../src/design-system/design-assets.js';
+import { DesignPresetLibrary } from '../../src/design-system/design-presets.js';
+import { checkAestheticPrinciples } from '../../src/design-system/aesthetic-principles.js';
 import { SkillExecutor, buildArtifact, DEFAULT_THEME } from '../../src/execution/skill-executor.js';
 import { discoverSkillsFromDir } from '../../src/execution/skill-registry.js';
 import { IntentRouter } from '../../src/routing/intent-router.js';
@@ -21,6 +23,27 @@ function makeSkill(name: string): DesignSkill {
       return {
         taskId: String(context.taskId),
         type: 'slides',
+        status: 'ready',
+        html: `<html><body>${input}</body></html>`,
+        pages: 1,
+        metadata: { context },
+      };
+    },
+  };
+}
+
+function makeDashboardSkill(): DesignSkill {
+  return {
+    contract: {
+      name: 'dashboard',
+      artifactType: 'dashboard',
+      description: 'dashboard description',
+      triggerKeywords: ['dashboard'],
+    },
+    async generate(input, _theme, context): Promise<Artifact> {
+      return {
+        taskId: String(context.taskId),
+        type: 'dashboard',
         status: 'ready',
         html: `<html><body>${input}</body></html>`,
         pages: 1,
@@ -59,6 +82,17 @@ describe('Skill executor and registry', () => {
         designSystemId: 'general',
         designSystemName: 'General Purpose Design System',
         designMdContext: expect.stringContaining('DESIGN.md Asset Context'),
+        aestheticPrinciplesContext: expect.stringContaining('## Aesthetic Principles'),
+        designGenerationConstraints: expect.arrayContaining([
+          expect.stringContaining('Whitespace Rhythm'),
+        ]),
+        qualityRules: expect.arrayContaining([
+          expect.objectContaining({ id: 'aesthetic:loaded' }),
+        ]),
+      }),
+      aestheticPrinciples: expect.objectContaining({
+        count: expect.any(Number),
+        promptContext: expect.stringContaining('Whitespace Rhythm'),
       }),
       designSystem: expect.objectContaining({
         id: 'general',
@@ -66,8 +100,113 @@ describe('Skill executor and registry', () => {
       }),
       designSystemQualityReport: expect.objectContaining({
         taskId: 'task-skill',
+        items: expect.arrayContaining([
+          expect.objectContaining({ rule: 'aesthetic:whitespace-rhythm' }),
+        ]),
       }),
     });
+  });
+
+  it('produces heuristic warning items for structured aesthetic violations', async () => {
+    const artifact: Artifact = {
+      taskId: 'task-aesthetic',
+      type: 'dashboard',
+      status: 'ready',
+      html: '<html><body>dashboard</body></html>',
+      pages: 1,
+      metadata: {
+        context: {
+          layoutDensity: 'high density compact wallboard',
+          contrastMode: 'muted low contrast same visual weight',
+          alignmentMode: 'freeform misaligned scattered modules',
+          hierarchyMode: 'equal emphasis metadata emphasis no primary focus',
+        },
+      },
+    };
+
+    const items = checkAestheticPrinciples(artifact, [
+      {
+        id: 'whitespace-rhythm',
+        name: 'Whitespace Rhythm',
+        appliesTo: ['all'],
+        positiveRequirements: [],
+        antiPatterns: [],
+        checkpoints: [],
+      },
+      {
+        id: 'contrast-hierarchy',
+        name: 'Contrast Hierarchy',
+        appliesTo: ['all'],
+        positiveRequirements: [],
+        antiPatterns: [],
+        checkpoints: [],
+      },
+      {
+        id: 'alignment-order',
+        name: 'Alignment Order',
+        appliesTo: ['all'],
+        positiveRequirements: [],
+        antiPatterns: [],
+        checkpoints: [],
+      },
+      {
+        id: 'primary-secondary-order',
+        name: 'Primary vs Secondary Order',
+        appliesTo: ['all'],
+        positiveRequirements: [],
+        antiPatterns: [],
+        checkpoints: [],
+      },
+    ]);
+
+    expect(items.filter(item => !item.passed && item.severity === 'warn')).toEqual(expect.arrayContaining([
+      expect.objectContaining({ rule: 'aesthetic:whitespace-rhythm:whitespace' }),
+      expect.objectContaining({ rule: 'aesthetic:contrast-hierarchy:contrast' }),
+      expect.objectContaining({ rule: 'aesthetic:alignment-order:alignment' }),
+      expect.objectContaining({ rule: 'aesthetic:primary-secondary-order:hierarchy' }),
+    ]));
+  });
+
+  it('merges skill-level aesthetic overrides, additions, and task deviations into generation and quality context', async () => {
+    const router = new IntentRouter();
+    router.register(makeDashboardSkill());
+    const executor = new SkillExecutor(router);
+
+    const artifact = await executor.execute(
+      {
+        ...makeIntent({
+          primaryType: 'dashboard',
+          matchedSkill: 'dashboard',
+          context: {
+            aestheticDeviations: ['Allow denser-than-default KPI tiles for a wallboard view.'],
+          },
+        }),
+      },
+      'Build dashboard',
+      DEFAULT_THEME,
+    );
+
+    expect(artifact.metadata.context).toEqual(expect.objectContaining({
+      aestheticPrinciplesContext: expect.stringContaining('Dashboard Scan Path'),
+      aestheticGenerationConstraints: expect.arrayContaining([
+        expect.stringContaining('Approved aesthetic deviation'),
+      ]),
+      designGenerationConstraints: expect.arrayContaining([
+        expect.stringContaining('Approved aesthetic deviation'),
+      ]),
+    }));
+    expect(artifact.metadata.aestheticPrinciples).toEqual(expect.objectContaining({
+      overrides: expect.arrayContaining(['information-density']),
+      additions: expect.arrayContaining(['dashboard-scan-path']),
+      deviations: ['Allow denser-than-default KPI tiles for a wallboard view.'],
+    }));
+    expect(artifact.metadata.designSystemQualityReport).toEqual(expect.objectContaining({
+      items: expect.arrayContaining([
+        expect.objectContaining({ rule: 'aesthetic:dashboard-scan-path' }),
+        expect.objectContaining({ rule: 'aesthetic:deviation' }),
+        expect.objectContaining({ rule: 'aesthetic:whitespace-rhythm:whitespace', passed: true, severity: 'info' }),
+      ]),
+    }));
   });
 
   it('injects custom DESIGN.md context into the skill prompt context and theme', async () => {
@@ -152,6 +291,63 @@ Custom System
     }));
     expect(artifact.metadata.designSystemQualityReport).toEqual(expect.objectContaining({
       conclusion: 'pass',
+    }));
+  });
+
+  it('injects resolved preset context, shared plan, and priority summary into the skill and artifact metadata', async () => {
+    const router = new IntentRouter();
+    router.register(makeSkill('slides-skill'));
+
+    const designAssets = new DesignAssetLibrary();
+    const presetLibrary = new DesignPresetLibrary({ assetLibrary: designAssets });
+    const presets = await presetLibrary.listPresets();
+    const presetResolution = await presetLibrary.selectPreset(presets[0].id);
+    const presetPlan = await presetLibrary.resolveForDeliverables({
+      deliverables: ['slides', 'poster'],
+      presetId: presetResolution.preset.id,
+    });
+    const presetPriorityResolution = presetLibrary.resolvePriority({ presetId: presetResolution.preset.id });
+
+    const executor = new SkillExecutor(router, designAssets);
+    const artifact = await executor.execute(
+      makeIntent({
+        context: {
+          presetResolution,
+          presetPlan,
+          presetPriorityResolution,
+          designSystemId: presetResolution.preset.id,
+        },
+      }),
+      'Build this',
+      DEFAULT_THEME,
+    );
+
+    expect(artifact.metadata.context).toEqual(expect.objectContaining({
+      presetUsed: expect.objectContaining({
+        id: presetResolution.preset.id,
+        method: 'explicit',
+      }),
+      presetPlan: expect.objectContaining({
+        sharedPresetId: presetResolution.preset.id,
+        assignments: expect.arrayContaining([
+          expect.objectContaining({ deliverable: 'slides', presetId: presetResolution.preset.id }),
+          expect.objectContaining({ deliverable: 'poster', presetId: presetResolution.preset.id }),
+        ]),
+      }),
+      presetPrioritySummary: expect.stringContaining('default visual base'),
+      designGenerationConstraints: expect.arrayContaining([
+        expect.stringContaining('Design preset selected'),
+        expect.stringContaining('Shared preset plan'),
+        expect.stringContaining('Preset priority'),
+      ]),
+      designDeliveryNotes: expect.arrayContaining([
+        expect.stringContaining('Preset used'),
+      ]),
+    }));
+    expect(artifact.metadata).toEqual(expect.objectContaining({
+      presetUsed: expect.objectContaining({ id: presetResolution.preset.id }),
+      presetPlan: expect.objectContaining({ sharedPresetId: presetResolution.preset.id }),
+      presetPriorityResolution: expect.objectContaining({ role: 'base' }),
     }));
   });
 

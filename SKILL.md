@@ -38,8 +38,16 @@ Skill 级引用语法使用 `SKILL.md` frontmatter：
 name: claw-design-slides
 description: "..."
 designSystem: general
+aestheticPrincipleOverrides: visual-focus
+aestheticPrincipleAdditions: slide-pacing
 ---
 ```
+
+其中：
+- `aestheticPrincipleOverrides`：声明这个 skill 会收窄或改写哪些全局审美原则，值为逗号分隔的原则 ID。
+- `aestheticPrincipleAdditions`：声明这个 skill 额外补充哪些局部审美原则，值为逗号分隔的原则 ID。
+
+运行时会把全局原则、skill 级覆盖/补充原则和任务级 `aestheticDeviations` 一起注入生成上下文与质量检查，保证“生成什么”和“什么样算好”使用同一套结构化约束。
 
 运行时也支持在任务上下文中传 `designSystemId` / `designSystem` / `designAssetId` 覆盖该默认值。自定义资产格式为 `<asset-id>/DESIGN.md`，内容需包含设计系统名称、适用场景、色板、字体栈、字号层级、间距系统、组件描述、布局约束、参考样例和禁用规则。
 

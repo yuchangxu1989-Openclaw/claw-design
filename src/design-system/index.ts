@@ -32,6 +32,37 @@ export type {
   DesignAssetValidationResult,
   DesignAssetLibraryOptions,
 } from './design-assets.js';
+export type {
+  DesignPreset,
+  DesignPresetDescriptor,
+  DesignPresetLibraryOptions,
+  PresetMatchProvider,
+  PresetMatchRequest,
+  PresetMatchResult,
+  PresetPriorityResolution,
+  PresetPriorityRole,
+  PresetResolution,
+  PresetSelectionMethod,
+  DeliverablePresetPlan,
+} from './design-presets.js';
+export type {
+  AestheticPrinciple,
+  AestheticResolution,
+} from './aesthetic-principles.js';
+export type {
+  ReferenceDensity,
+  ReferenceExtractionStatus,
+  ReferenceImageAnalysisRequest,
+  ReferenceImageAnalyzerProvider,
+  ReferenceImageDeclaredBy,
+  ReferenceImageKind,
+  ReferenceImageSource,
+  ReferenceLayoutStyle,
+  ReferenceStyleAnalysis,
+  ReferenceDesignSystemContext,
+  ReferenceStyleResolution,
+  ReferenceTypographyStyle,
+} from './reference-style.js';
 
 export { DesignSystemRegistry } from './registry.js';
 export { HardcodedValueDetector } from './constraint-checker.js';
@@ -52,3 +83,11 @@ export { BrandInjector } from './injector.js';
 export { PackageValidator } from './package-validator.js';
 export { ActivePackageManager } from './active-package.js';
 export { DesignAssetLibrary, DEFAULT_DESIGN_SYSTEM_ID } from './design-assets.js';
+export { DesignPresetLibrary, PRESET_PERSONALITY_HEADING } from './design-presets.js';
+export { parseAestheticFrontmatter, resolveAestheticPrinciples } from './aesthetic-principles.js';
+export {
+  buildReferenceImageAnalysisPrompt,
+  buildReferenceStyleDesignMd,
+  findReferenceImageSource,
+  resolveReferenceStyleForRequest,
+} from './reference-style.js';

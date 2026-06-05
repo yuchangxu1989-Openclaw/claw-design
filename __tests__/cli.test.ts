@@ -72,6 +72,34 @@ describe('CLI generate (e2e)', () => {
       expect(existsSync(join(outDir, 'index.html'))).toBe(false);
     }
   }, 30_000);
+
+  it('surfaces a clear error when --reference-image is missing a value', async () => {
+    try {
+      await execFileAsync(
+        'node',
+        [CLI_PATH, 'generate', '流程图', '--reference-image', '-o', outDir],
+        { timeout: 30_000 },
+      );
+      expect.unreachable('should have thrown');
+    } catch (err: any) {
+      expect(err.stderr || err.stdout).toContain('--reference-image 需要提供图片路径或 URL');
+      expect(existsSync(join(outDir, 'index.html'))).toBe(false);
+    }
+  }, 30_000);
+
+  it('surfaces a clear error when --preset is missing a value', async () => {
+    try {
+      await execFileAsync(
+        'node',
+        [CLI_PATH, 'generate', '流程图', '--preset', '-o', outDir],
+        { timeout: 30_000 },
+      );
+      expect.unreachable('should have thrown');
+    } catch (err: any) {
+      expect(err.stderr || err.stdout).toContain('--preset 需要提供预设名称');
+      expect(existsSync(join(outDir, 'index.html'))).toBe(false);
+    }
+  }, 30_000);
 });
 
 describe('CLI plugin commands', () => {

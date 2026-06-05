@@ -37,12 +37,17 @@ claw-design — AI 设计引擎 CLI
 
 选项:
   -o, --output <dir>  输出目录（默认 ./output）
+  -r, --reference-image <path|url>
+                      参考图路径或 URL，用于当次任务风格提取
+  --preset <name>     显式选择设计风格预设
   -h, --help          显示帮助
   -v, --version       显示版本
 
 示例:
   claw-design generate "帮我做一个关于AI趋势的演示文稿"
   claw-design "季度汇报 PPT" -o ./my-output
+  claw-design generate "产品页" --reference-image ./style.png -o ./output
+  claw-design generate "品牌发布海报" --preset editorial -o ./output
   claw-design generate "system architecture diagram for microservices"
   claw-design plugin install ./plugins/icon-pack
   claw-design plugin list
@@ -173,11 +178,27 @@ async function main(): Promise<void> {
 
   let prompt: string | undefined;
   let outputDir = './output';
+  let referenceImage: string | undefined;
+  let preset: string | undefined;
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '-o' || arg === '--output') {
       outputDir = args[++i] ?? './output';
+    } else if (arg === '-r' || arg === '--reference-image') {
+      const value = args[++i];
+      if (!value || value.startsWith('-')) {
+        console.error('错误: --reference-image 需要提供图片路径或 URL');
+        process.exit(1);
+      }
+      referenceImage = value;
+    } else if (arg === '--preset') {
+      const value = args[++i];
+      if (!value || value.startsWith('-')) {
+        console.error('错误: --preset 需要提供预设名称');
+        process.exit(1);
+      }
+      preset = value;
     } else if (arg === 'generate') {
       continue;
     } else if (!arg.startsWith('-')) {
@@ -194,14 +215,22 @@ async function main(): Promise<void> {
   const resolvedOutput = resolve(outputDir);
   console.log(`正在生成... 输入: "${prompt}"`);
   console.log(`输出目录: ${resolvedOutput}`);
+  if (referenceImage) console.log(`参考图: ${referenceImage}`);
+  if (preset) console.log(`设计预设: ${preset}`);
 
   try {
     // standalone CLI: no LLM classifier is injected here. Intent routing is
     // LLM-only by design (PRD AC-08) — there is no keyword fallback. When no
     // host LLM is available, the pipeline cannot determine intent and raises
     // ClarifyNeededError, which we surface as a guiding message below.
+    const metadata: Record<string, unknown> = {};
+    if (referenceImage) metadata.referenceImage = referenceImage;
+    if (preset) metadata.preset = preset;
+    const pipelineInput = Object.keys(metadata).length > 0
+      ? { rawInput: prompt, metadata }
+      : prompt;
     const pipeline = await createPipeline();
-    const result = await pipeline.run(prompt, resolvedOutput);
+    const result = await pipeline.run(pipelineInput, resolvedOutput);
 
     if (result.bundle) {
       console.log(`\n生成完成!`);

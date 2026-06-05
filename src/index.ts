@@ -147,9 +147,16 @@ export type {
 } from './skills/shared/index.js';
 
 export {
+  buildReferenceImageAnalysisPrompt,
+  buildReferenceStyleDesignMd,
+  findReferenceImageSource,
+  resolveReferenceStyleForRequest,
+} from './design-system/index.js';
+export {
   DesignSystemRegistry, HardcodedValueDetector, ConstraintInjector,
   VisualVerifier, DARK_SCI_FI_PACKAGE, MAX_RETRY_ATTEMPTS,
   DesignAssetLibrary, DEFAULT_DESIGN_SYSTEM_ID,
+  DesignPresetLibrary, PRESET_PERSONALITY_HEADING,
 } from './design-system/index.js';
 export type {
   DesignSystemPackage, DesignTokens, DesignSpacingScale, TypographyScale,
@@ -158,6 +165,14 @@ export type {
   GenerationAttempt, ScreenshotProvider, ImageComparator, VisualVerifierOptions,
   DesignAsset, DesignAssetResolution, DesignAssetTokens, DesignAssetValidationResult,
   DesignAssetLibraryOptions,
+  DesignPreset, DesignPresetDescriptor, DesignPresetLibraryOptions,
+  PresetMatchProvider, PresetMatchRequest, PresetMatchResult,
+  PresetPriorityResolution, PresetPriorityRole, PresetResolution,
+  PresetSelectionMethod, DeliverablePresetPlan,
+  ReferenceDensity, ReferenceExtractionStatus, ReferenceImageAnalysisRequest,
+  ReferenceImageAnalyzerProvider, ReferenceImageDeclaredBy, ReferenceImageKind,
+  ReferenceImageSource, ReferenceLayoutStyle, ReferenceStyleAnalysis,
+  ReferenceStyleResolution, ReferenceTypographyStyle,
 } from './design-system/index.js';
 
 import { IntentRouter } from './routing/index.js';
@@ -166,7 +181,8 @@ import type { IntentClassifierProvider } from './routing/index.js';
 import { ClarifyNeededError } from './routing/index.js';
 import { SkillRegistry } from './skills/skill-registry.js';
 import { SkillExecutor, DEFAULT_THEME } from './execution/index.js';
-import { DesignAssetLibrary } from './design-system/index.js';
+import { DesignAssetLibrary, DesignPresetLibrary } from './design-system/index.js';
+import { resolveReferenceStyleForRequest } from './design-system/index.js';
 import { QualityGateL1 } from './quality/index.js';
 import { QualityGateL2Impl } from './quality/index.js';
 import { QualityGateL3Impl } from './quality/index.js';
@@ -177,6 +193,7 @@ import type { ThemePack, DeliveryBundle, QualityReport, QualityConclusion, Desig
 import type { SemanticValidator } from './quality/index.js';
 import { PluginManager, loadEnabledPluginContributions } from './plugins/index.js';
 import type { PluginContributions } from './plugins/index.js';
+import type { PresetMatchProvider, ReferenceImageAnalyzerProvider } from './design-system/index.js';
 
 export interface PipelineResult {
   bundle: DeliveryBundle | null;
@@ -194,6 +211,10 @@ export interface CreatePipelineOptions {
   pluginManager?: PluginManager;
   /** DESIGN.md asset library. Defaults to built-in general design system. */
   designAssets?: DesignAssetLibrary;
+  /** LLM preset matcher injected by host for FR-H10 automatic preset selection. */
+  presetMatchProvider?: PresetMatchProvider;
+  /** Vision/style analyzer injected by host for FR-H12 reference image extraction. */
+  referenceImageAnalyzer?: ReferenceImageAnalyzerProvider;
 }
 
 /**
@@ -224,6 +245,7 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
   });
 
   const designAssets = options.designAssets ?? new DesignAssetLibrary();
+  const presetLibrary = new DesignPresetLibrary({ assetLibrary: designAssets, matchProvider: options.presetMatchProvider });
   const executor = new SkillExecutor(router, designAssets);
   const qualityGate = new QualityGateL1();
   const qualityGateL2 = new QualityGateL2Impl();
@@ -248,7 +270,7 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
       // 1. Adapt input
       const request = await adapter.adapt(rawInput);
 
-      // 2. Route intent (async — LLM primary, keyword fallback)
+      // 2. Route intent (async; no keyword fallback when LLM is absent)
       const intent = await router.route(request);
 
       // 3. Handle low confidence — per arc42 §6.1 Clarify flow
@@ -263,8 +285,89 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
         const filled = await adapter.clarify(intent.gaps);
         Object.assign(intent.context, filled);
       }
+      const baseDesignAsset = await designAssets.resolveForSkill(intent.matchedSkill ?? 'unknown', intent.context);
+      const deliverableTypes = [intent.primaryType, ...intent.secondaryTypes];
+      const deliverables = Array.from(new Set(deliverableTypes.map(type => String(type))));
+      const presetResolution = await presetLibrary.resolve({
+        presetId: this.readStringMetadata(request.metadata, 'preset') ?? this.readStringMetadata(request.metadata, 'designPreset') ?? this.readStringMetadata(intent.context, 'preset') ?? this.readStringMetadata(intent.context, 'designPreset'),
+        match: {
+          taskType: intent.primaryType,
+          audience: this.readStringMetadata(intent.context, 'audience'),
+          tone: this.readStringMetadata(intent.context, 'tone') ?? this.readStringMetadata(request.metadata, 'tone'),
+          brandConstraints: this.readBrandConstraints(intent.context, request.metadata),
+          rawInput: request.rawInput,
+        },
+      });
+      const presetDeliverables = deliverables.length > 0 ? deliverables : [intent.matchedSkill ?? intent.primaryType];
+      const presetPlan = {
+        sharedPresetId: presetResolution.preset.id,
+        method: presetResolution.method,
+        assignments: presetDeliverables.map(deliverable => ({
+          deliverable,
+          presetId: presetResolution.preset.id,
+          isException: false,
+        })),
+        exceptions: [],
+        summary: `${presetResolution.summary} Shared across all ${presetDeliverables.length} deliverable(s).`,
+      };
+      const hasExplicitDesignMd = Boolean(
+        this.readStringMetadata(intent.context, 'designSystemId')
+          ?? this.readStringMetadata(intent.context, 'designAssetId')
+          ?? this.readStringMetadata(intent.context, 'designMdId')
+          ?? this.readStringMetadata(request.metadata, 'designSystemId')
+          ?? this.readStringMetadata(request.metadata, 'designAssetId')
+          ?? this.readStringMetadata(request.metadata, 'designMdId'),
+      );
+      const priorityResolution = presetLibrary.resolvePriority({
+        presetId: presetResolution.preset.id,
+        hasBrandPackage: Boolean(intent.context.brandKit ?? request.metadata?.brandKit ?? intent.context.brand ?? request.metadata?.brand),
+        brandPackageName: this.readStringMetadata(intent.context, 'brand') ?? this.readStringMetadata(request.metadata, 'brand'),
+        hasDesignMd: hasExplicitDesignMd,
+        designMdId: baseDesignAsset.asset.id,
+      });
+
       intent.context = {
         ...intent.context,
+        preset: presetResolution.preset.id,
+        presetResolution,
+        presetPlan,
+        presetPriorityResolution: priorityResolution,
+        designSystemId: priorityResolution.role === 'base' ? presetResolution.preset.id : baseDesignAsset.asset.id,
+        designPresetBaseId: presetResolution.preset.id,
+      };
+
+      const activeDesignAsset = await designAssets.resolveForSkill(intent.matchedSkill ?? 'unknown', intent.context);
+      const referenceStyle = await resolveReferenceStyleForRequest(request, {
+        analyzer: options.referenceImageAnalyzer,
+        context: {
+          ...intent.context,
+          ...request.metadata,
+          pluginContributions,
+          pluginAssetCandidates: pluginContributions.assetCandidates,
+        },
+        skillName: intent.matchedSkill ?? undefined,
+        artifactType: intent.primaryType,
+        designSystem: designAssets.toReferenceDesignSystemContext(activeDesignAsset.asset),
+      });
+
+      const referenceQualityRules = referenceStyle?.qualityItems.map(rule => ({
+        id: rule.rule,
+        severity: rule.severity,
+        description: rule.message,
+      })) ?? [];
+
+      intent.context = {
+        ...intent.context,
+        referenceStyle,
+        referenceStyleDesignMd: referenceStyle?.designMd,
+        referenceStylePrompt: referenceStyle?.prompt,
+        referenceStyleAnalysis: referenceStyle?.analysis,
+        referenceStyleGenerationConstraints: referenceStyle?.generationConstraints ?? [],
+        referenceStyleDeliveryNotes: referenceStyle?.deliveryNotes ?? [],
+        qualityRules: [
+          ...referenceQualityRules,
+          ...((intent.context.qualityRules as unknown[]) ?? []),
+        ],
         pluginContributions,
         pluginAssetCandidates: pluginContributions.assetCandidates,
       };
@@ -363,5 +466,22 @@ export async function createPipeline(theme?: ThemePack, options: CreatePipelineO
 
       return { bundle, quality, deliveryMessage: deliveryResult.message };
     },
+
+    readStringMetadata(source: Record<string, unknown> | undefined, key: string): string | undefined {
+      const value = source?.[key];
+      return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+    },
+
+    readBrandConstraints(...sources: Array<Record<string, unknown> | undefined>): string | undefined {
+      const parts = sources.flatMap(source => {
+        if (!source) return [];
+        return ['brand', 'brandKit', 'colors', 'fonts', 'style', 'theme']
+          .map(key => source[key])
+          .filter(value => value !== undefined)
+          .map(value => typeof value === 'string' ? value : JSON.stringify(value));
+      });
+      return parts.length > 0 ? parts.join(' | ') : undefined;
+    },
   };
 }
+

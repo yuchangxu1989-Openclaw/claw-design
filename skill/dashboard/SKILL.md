@@ -2,6 +2,8 @@
 name: claw-design-dashboard
 description: "Dashboard 数据看板生成。做看板、dashboard、数据面板、数据大屏、监控面板、KPI 看板、analytics dashboard、data panel、metrics board、运营看板。输入指标描述，输出 HTML 数据看板。"
 designSystem: general
+aestheticPrincipleOverrides: information-density
+aestheticPrincipleAdditions: dashboard-scan-path
 ---
 
 # Claw Design — Dashboard Skill

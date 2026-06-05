@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { createPipeline, ClarifyNeededError } from '../../src/index.js';
 import type { IntentClassifierProvider, ClassificationResult, SkillDescription } from '../../src/routing/intent-classifier.js';
 import type { ArtifactType } from '../../src/types.js';
+import type { PresetMatchProvider, PresetMatchRequest, DesignPresetDescriptor, PresetMatchResult } from '../../src/design-system/design-presets.js';
 
 /**
  * Mock LLM classifier for e2e tests.
@@ -71,6 +72,15 @@ class MockLLMClassifier implements IntentClassifierProvider {
 
 const mockClassifier = new MockLLMClassifier();
 
+class PipelinePresetProvider implements PresetMatchProvider {
+  lastRequest?: PresetMatchRequest;
+
+  async match(request: PresetMatchRequest, presets: DesignPresetDescriptor[]): Promise<PresetMatchResult> {
+    this.lastRequest = request;
+    return { presetId: presets[0].id, confidence: 0.91, reasoning: 'pipeline integration test pick' };
+  }
+}
+
 describe('E2E: createPipeline full flow', () => {
   it('routes a slides request through the full pipeline and produces a bundle', async () => {
     const pipeline = await createPipeline(undefined, { classifierProvider: mockClassifier });
@@ -108,6 +118,28 @@ describe('E2E: createPipeline full flow', () => {
       expect(result.bundle!.pngPath).toContain('.png');
       expect(result.bundle!.consistency?.checkedFormats).toEqual(expect.arrayContaining(['html', 'pptx', 'pdf', 'png']));
     }
+  });
+
+  it('resolves and injects a shared design preset through the pipeline', async () => {
+    const presetProvider = new PipelinePresetProvider();
+    const pipeline = await createPipeline(undefined, {
+      classifierProvider: mockClassifier,
+      presetMatchProvider: presetProvider,
+    });
+
+    const result = await pipeline.run({
+      taskId: 'fr-h10-pipeline',
+      rawInput: 'Create a slides deck and poster for a focused product launch',
+      metadata: { audience: 'founders', tone: 'focused' },
+    }, '/tmp/claw-e2e-preset');
+
+    expect(result.bundle).not.toBeNull();
+    expect(presetProvider.lastRequest).toEqual(expect.objectContaining({
+      taskType: 'slides',
+      audience: 'founders',
+      tone: 'focused',
+      rawInput: 'Create a slides deck and poster for a focused product launch',
+    }));
   });
 
   it('runs semantic cross validation only when explicitly enabled', async () => {
